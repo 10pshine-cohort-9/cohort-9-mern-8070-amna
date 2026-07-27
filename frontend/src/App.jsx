@@ -19,6 +19,7 @@ function App() {
         <input 
           type="text"
           value={input}
+          aria-label="Write a note"
           onChange={(e) => setInput(e.target.value)}
           placeholder="Write a note..."
           style={{ padding: '10px', width: '300px', marginRight: '10px' }}
