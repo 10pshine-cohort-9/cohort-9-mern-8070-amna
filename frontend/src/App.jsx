@@ -6,7 +6,7 @@ function App() {
 
   const addNote = () => {
     if (input.trim()) {
-      setNotes([...notes, input])
+      setNotes([...notes, input.trim()])
       setInput('')
     }
   }
