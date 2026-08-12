@@ -50,6 +50,8 @@
   color: #aaa;
   cursor: pointer;
   padding: 0 4px;
+  background: none;
+  border: none;
 }
 
 .category-menu:hover {

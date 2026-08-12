@@ -17,12 +17,18 @@ function Dashboard() {
   const [showCategoryModal, setShowCategoryModal] = useState(false)
 
   const handleDeleteCategory = (name, option) => {
+    const deletedCat = categories.find(cat => cat.name === name)
+    
     if (option === 'move') {
-      console.log(`${name} deleted, notes moved to General`)
+      setCategories(prev => prev.map(cat => {
+        if (cat.isDefault) {
+          return { ...cat, noteCount: cat.noteCount + deletedCat.noteCount }
+        }
+        return cat
+      }).filter(cat => cat.name !== name))
     } else {
-      console.log(`${name} deleted with all notes`)
+      setCategories(prev => prev.filter(cat => cat.name !== name))
     }
-    setCategories(prev => prev.filter(cat => cat.name !== name))
   }
 
   const handleAddCategory = (name) => {

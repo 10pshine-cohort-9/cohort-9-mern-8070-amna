@@ -10,13 +10,14 @@ function Login() {
 
     const mockUser = {
         email: "test@test.com",
-        password: '1123456'
+        password: '123456'
     }
 
     const handleLogin = () => {
         if (email === '' || password === '') {
             setError("Please fill in all fields.")
         } else if (email === mockUser.email && password === mockUser.password) {
+            localStorage.setItem('isLoggedIn', 'true')
             navigate("/dashboard")
         } else {
             setError("Invalid credentials. Try again or sign up.")

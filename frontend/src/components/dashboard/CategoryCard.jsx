@@ -22,10 +22,12 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
             ? <span className="built-in-badge">Built-in</span>
             : (
               <div className="category-menu-wrapper">
-                <span
+                <button
                   className="category-menu"
                   onClick={() => setMenuOpen(!menuOpen)}
-                >⋮</span>
+                  aria-expanded={menuOpen}
+                  aria-label="Category options"
+                >⋮</button>
                 {menuOpen && (
                   <div className="category-dropdown">
                     <button

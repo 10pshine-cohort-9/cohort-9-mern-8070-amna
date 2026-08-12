@@ -4,6 +4,11 @@ import './Navbar.css'
 function Navbar() {
   const navigate = useNavigate()
 
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn')
+    navigate('/login')
+  }
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
@@ -25,7 +30,7 @@ function Navbar() {
       <div className="navbar-right">
         <div className="navbar-avatar">A</div>
         <span className="navbar-username">Amna</span>
-        <button className="navbar-logout" onClick={() => navigate('/login')}>
+        <button className="navbar-logout" onClick={handleLogout}>
           ⇥ Logout
         </button>
       </div>
