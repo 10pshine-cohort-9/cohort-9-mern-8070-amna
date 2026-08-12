@@ -1,0 +1,127 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 64px;
+  background-color: #187171;
+  color: white;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.navbar-logo {
+  font-size: 24px;
+}
+
+.navbar-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+}
+
+.navbar-center {
+  flex: 1;
+  max-width: 400px;
+  margin: 0 40px;
+}
+
+.navbar-search {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+
+.navbar-search::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.navbar-search:focus {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: white;
+  color: #187171;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.navbar-username {
+  font-size: 15px;
+  color: white;
+}
+
+.navbar-logout {
+  padding: 8px 16px;
+  border: 2px solid white;
+  border-radius: 8px;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.navbar-logout:hover {
+  background-color: white;
+  color: #187171;
+}
+
+
+.navbar-search-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.navbar-search {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+
+.navbar-search::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.navbar-search-btn {
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: white;
+  transition: background 0.2s;
+}
+
+.navbar-search-btn:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}

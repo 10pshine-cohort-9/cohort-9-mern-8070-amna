@@ -1,0 +1,110 @@
+import { useState } from 'react'
+import './CategoryCard.css'
+
+function CategoryCard({ name, description, noteCount, isDefault, color, onDelete }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [showModal, setShowModal] = useState(false)
+  const [deleteOption, setDeleteOption] = useState('move')
+
+  const handleDeleteConfirm = () => {
+    onDelete(name, deleteOption)
+    setShowModal(false)
+  }
+
+  return (
+    <>
+      <div className={`category-card ${isDefault ? 'category-card--default' : ''}`}>
+        <div className="category-card-top">
+          <div className="category-icon" style={{ backgroundColor: `${color}20`, color: color }}>
+            {isDefault ? '📁' : '📂'}
+          </div>
+          {isDefault
+            ? <span className="built-in-badge">Built-in</span>
+            : (
+              <div className="category-menu-wrapper">
+                <span
+                  className="category-menu"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                >⋮</span>
+                {menuOpen && (
+                  <div className="category-dropdown">
+                    <button
+                      className="dropdown-delete"
+                      onClick={() => {
+                        setMenuOpen(false)
+                        setShowModal(true)
+                      }}
+                    >
+                      🗑 Delete
+                    </button>
+                  </div>
+                )}
+              </div>
+            )
+          }
+        </div>
+
+        <div className="category-card-body">
+          <h3 style={{ color: color }}>{name}</h3>
+          <p>{description}</p>
+        </div>
+
+        <div className="category-card-footer">
+          <span className="note-count" style={{ backgroundColor: `${color}20`, color: color }}>
+            {noteCount} notes
+          </span>
+        </div>
+      </div>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Delete "{name}"?</h3>
+            <p>This category contains <strong>{noteCount} notes</strong>.</p>
+            <p>What would you like to do with these notes?</p>
+
+            <div className="modal-options">
+              <label>
+                <input
+                  type="radio"
+                  name="deleteOption"
+                  value="move"
+                  checked={deleteOption === 'move'}
+                  onChange={() => setDeleteOption('move')}
+                />
+                Move all notes to General
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="deleteOption"
+                  value="delete"
+                  checked={deleteOption === 'delete'}
+                  onChange={() => setDeleteOption('delete')}
+                />
+                Delete all notes
+              </label>
+            </div>
+
+            <div className="modal-buttons">
+              <button
+                className="modal-cancel"
+                onClick={() => setShowModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="modal-confirm"
+                onClick={handleDeleteConfirm}
+              >
+                Delete Category
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
+
+export default CategoryCard
