@@ -20,10 +20,11 @@ function Navbar() {
         <div className="navbar-search-wrapper">
           <input
             type="text"
+            aria-label="Search notes or categories"
             className="navbar-search"
             placeholder="Search notes or categories..."
           />
-          <button className="navbar-search-btn">🔍</button>
+          <button className="navbar-search-btn" aria-label="Search notes or categories">🔍</button>
         </div>
       </div>
 
