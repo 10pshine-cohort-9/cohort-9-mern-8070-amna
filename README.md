@@ -37,7 +37,7 @@ A frontend mock of a full-stack Notes App with user authentication and category 
 - Note Editor (rich text)
 - Category View (notes inside a category)
 
-```
+```text
 frontend/
   src/
     components/
