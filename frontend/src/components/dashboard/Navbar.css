@@ -125,3 +125,17 @@
 .navbar-search-btn:hover {
   background-color: rgba(255, 255, 255, 0.15);
 }
+
+.search-clear {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 8px;
+  transition: color 0.2s;
+}
+
+.search-clear:hover {
+  color: white;
+}

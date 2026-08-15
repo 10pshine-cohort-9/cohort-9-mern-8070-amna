@@ -90,3 +90,37 @@
   font-size: 13px;
   color: #aaa;
 }
+
+.categories-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.categories-section-header h2 {
+  margin-bottom: 0;
+}
+
+.btn-clear-search {
+  background: none;
+  border: none;
+  color: #187171;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-clear-search:hover {
+  text-decoration: underline;
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 40px;
+  color: #888;
+  font-size: 15px;
+}

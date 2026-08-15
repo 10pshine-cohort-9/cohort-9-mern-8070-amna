@@ -73,3 +73,15 @@
 .login-box a:hover {
   text-decoration: underline;
 }
+
+.login-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-box label {
+  font-size: 13px;
+  color: #555;
+  font-weight: 600;
+}

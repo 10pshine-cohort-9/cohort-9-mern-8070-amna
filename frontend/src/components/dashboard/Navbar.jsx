@@ -41,6 +41,13 @@ function Navbar({ onSearch }) {
           >
             🔍
           </button>
+
+          {searchQuery && (
+            <button className="search-clear" onClick={() => {
+              setSearchQuery('')
+              onSearch('')
+            }}>✕</button>
+          )}
         </div>
       </div>
 
