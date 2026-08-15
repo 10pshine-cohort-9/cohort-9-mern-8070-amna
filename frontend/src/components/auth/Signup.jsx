@@ -9,41 +9,46 @@ function Signup() {
     const [password, setPassword] = useState('')
         const [error, setError] = useState('')
 
-    const handleSignup = () => {
-        if (name === '' || email === '' || password == ''){
-            setError("Please fill in all fields.")
+    const handleSignup = (e) => {
+        e.preventDefault()
+        if (name === '' || email === '' || password === '') {
+            setError('Please fill in all fields.')
+            return
         } else {
+            localStorage.setItem('mockUser', JSON.stringify({ email, password }))
             navigate('/login')
         }
     }
 
     return (
-        <div className="signup-container">
-            <div className="signup-box">
-                <h2>Create Account</h2>
+    <div className="signup-container">
+        <div className="signup-box">
+            <h2>Create Account</h2>
+            <form onSubmit={handleSignup}>
                 <input
-                  type="text"
-                  placeholder="Full Name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                    type="text"
+                    placeholder="Full Name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
                 />
                 <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                    type="email"
+                    placeholder="Email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                 />
                 {error && <p className="error-msg">{error}</p>}
-                <button onClick={handleSignup}>Sign Up</button>
+                <button type="submit">Sign Up</button>
                 <p>Already have an account? <Link to="/login">Login</Link></p>
-            </div>
+            </form>
         </div>
-    )
+    </div>
+)
 }
 export default Signup

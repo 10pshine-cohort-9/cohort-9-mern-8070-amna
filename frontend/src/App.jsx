@@ -6,7 +6,7 @@ import Dashboard from "./pages/Dashboard"
 function App() {
   function ProtectedRoute({ children }) {
     const isLoggedIn = localStorage.getItem('isLoggedIn')
-    return isLoggedIn ? children : <Navigate to="/login" />
+    return isLoggedIn === 'true' ? children : <Navigate to="/login" />
   }
 
   return (
@@ -20,6 +20,7 @@ function App() {
             <Dashboard />
           </ProtectedRoute>
         }/>
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   )

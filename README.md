@@ -2,7 +2,7 @@
 Cohort 9 — MERN (NodeJS+ReactJS) assignment for Amna Saeed
 
 ## Project Overview
-A full-stack Notes App with user authentication, category management, and rich text note editing.
+A frontend mock of a full-stack Notes App with user authentication and category management. Backend integration, rich text editing, and remaining features are currently in progress.
 
 ## Tech Stack
 - **Frontend:** React.js (Vite), React Router DOM, Plain CSS
