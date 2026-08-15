@@ -25,10 +25,12 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
   }
 
   return (
-    <div className="new-category-overlay">
+    <div className="new-category-overlay" role="dialog" aria-modal="true" aria-labelledby="new-category-title">
       <div className="new-category-modal">
-        <h3>New Category</h3>
+        <h3 id="new-category-title">New Category</h3>
+        <label htmlFor="category-name">Category Name</label>
         <input
+          id="category-name"
           type="text"
           placeholder="Category name"
           value={name}

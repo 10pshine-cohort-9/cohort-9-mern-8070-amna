@@ -20,7 +20,13 @@ function Login() {
             return
         }
         const defaultUser = { email: 'test@test.com', password: '123456' }
-        const savedUser = JSON.parse(localStorage.getItem('mockUser'))
+        const savedUser = (() => {
+            try {
+                return JSON.parse(localStorage.getItem('mockUser'))
+            } catch {
+                return null
+            }
+        })()
         if (
             (email === defaultUser.email && password === defaultUser.password) ||
             (savedUser && email === savedUser.email && password === savedUser.password)

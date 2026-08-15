@@ -43,7 +43,7 @@ function Navbar({ onSearch }) {
           </button>
 
           {searchQuery && (
-            <button className="search-clear" onClick={() => {
+            <button aria-label="Clear search" className="search-clear" onClick={() => {
               setSearchQuery('')
               onSearch('')
             }}>✕</button>

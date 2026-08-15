@@ -37,28 +37,29 @@ A frontend mock of a full-stack Notes App with user authentication and category 
 - Note Editor (rich text)
 - Category View (notes inside a category)
 
-## Folder Structure
+```
 frontend/
-src/
-components/
-auth/
-Login.jsx
-Login.css
-Signup.jsx
-Signup.css
-dashboard/
-Navbar.jsx
-Navbar.css
-CategoryCard.jsx
-CategoryCard.css
-NewCategoryModal.jsx
-NewCategoryModal.css
-pages/
-Dashboard.jsx
-Dashboard.css
-index.css
-App.jsx
-main.jsx
+  src/
+    components/
+      auth/
+        Login.jsx
+        Login.css
+        Signup.jsx
+        Signup.css
+      dashboard/
+        Navbar.jsx
+        Navbar.css
+        CategoryCard.jsx
+        CategoryCard.css
+        NewCategoryModal.jsx
+        NewCategoryModal.css
+    pages/
+      Dashboard.jsx
+      Dashboard.css
+    index.css
+    App.jsx
+    main.jsx
+```
 
 ## How to Run
 ```bash

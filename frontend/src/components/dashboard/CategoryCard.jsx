@@ -59,9 +59,9 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
       </div>
 
       {showModal && (
-        <div className="modal-overlay">
+        <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
           <div className="modal">
-            <h3>Delete "{name}"?</h3>
+            <h3 id="delete-modal-title">Delete "{name}"?</h3>
             <p>This category contains <strong>{noteCount} notes</strong>.</p>
             <p>What would you like to do with these notes?</p>
 
