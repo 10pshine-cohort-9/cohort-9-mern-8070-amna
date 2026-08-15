@@ -9,6 +9,7 @@ const initialCategories = [
   { id: 1, name: 'General', description: 'All your general notes', noteCount: 0, isDefault: true, color: '#187171' },
   { id: 2, name: 'University', description: 'My academic journey', noteCount: 8, isDefault: false, color: '#7B5EA7' },
   { id: 3, name: 'Development', description: 'Coding and projects', noteCount: 15, isDefault: false, color: '#2E86AB' },
+  { id: 4, name: 'Personal', description: 'My personal thoughts', noteCount: 5, isDefault: false, color: '#C17D3C' }
 ]
 
 const colors = ['#7B5EA7', '#2E86AB', '#C17D3C', '#E05C8A', '#3DAA6E', '#E07B39']
