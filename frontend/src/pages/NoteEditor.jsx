@@ -1,1 +1,1 @@
-/* Will be working on it as a next feature later on. Note Editor code will be written here */
+/* Will be working on it as a next feature later on. */
