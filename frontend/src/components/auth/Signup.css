@@ -74,3 +74,20 @@
 .signup-box a:hover {
   text-decoration: underline;
 }
+
+.signup-box form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.signup-box label {
+  font-size: 13px;
+  color: #555;
+  font-weight: 600;
+}
+
+.signup-box input {
+  width: 100%;
+  box-sizing: border-box;
+}

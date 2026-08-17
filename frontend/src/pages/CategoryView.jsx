@@ -4,7 +4,7 @@ import { useNotes } from '../context/NotesContext'
 import './CategoryView.css'
 
 function CategoryView() {
-  const { categoryName: encodedName } = useParams()
+  const { categoryName } = useParams()
   const { notes, categories, deleteNote, moveNotes } = useNotes()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
@@ -83,7 +83,7 @@ function CategoryView() {
           </div>
           <button
             className="btn-new-note"
-            onClick={() => navigate(`/notes/new/${encodeURIComponent(categoryName)}`)}
+            onClick={() => navigate(`/notes/new/${categoryName}`)}
           >
             + New Note
           </button>
@@ -195,7 +195,7 @@ function CategoryView() {
             <p>No notes in this category yet.</p>
             <button
               className="btn-new-note"
-              onClick={() => navigate(`/notes/new/${encodeURIComponent(categoryName)}`)}
+              onClick={() => navigate(`/notes/new/${categoryName}`)}
             >
               + Create your first note
             </button>

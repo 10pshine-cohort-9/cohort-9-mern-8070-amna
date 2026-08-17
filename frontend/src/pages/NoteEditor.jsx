@@ -7,7 +7,7 @@ import './NoteEditor.css'
 
 function NoteEditor() {
   const { categories, addCategory, addNote, editNote, notes } = useNotes()
-  const { categoryName: encodedCategoryName, noteId } = useParams()
+  const { categoryName, noteId } = useParams()
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [error, setError] = useState('')
@@ -53,10 +53,10 @@ function NoteEditor() {
 
     if (isEditMode && existingNote) {
       editNote(existingNote.id, title, editor.getHTML())
-      navigate(`/category/${encodeURIComponent(existingNote.categoryName)}`)
+      navigate(`/category/${existingNote.categoryName}`)
     } else {
       addNote(title, editor.getHTML(), selectedCategory)
-      navigate(`/category/${encodeURIComponent(selectedCategory)}`)
+      navigate(`/category/${selectedCategory}`)
     }
   }
 
