@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './CategoryCard.css'
 
 function CategoryCard({ name, description, noteCount, isDefault, color, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [deleteOption, setDeleteOption] = useState('move')
+  const navigate = useNavigate()
 
   const handleDeleteConfirm = () => {
     onDelete(name, deleteOption)
@@ -13,7 +15,7 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
 
   return (
     <>
-      <div className={`category-card ${isDefault ? 'category-card--default' : ''}`}>
+      <div className={`category-card ${isDefault ? 'category-card--default' : ''}`} onClick={() => navigate(`/category/${name}`)}>
         <div className="category-card-top">
           <div className="category-icon" style={{ backgroundColor: `${color}20`, color: color }}>
             {isDefault ? '📁' : '📂'}

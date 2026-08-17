@@ -1,0 +1,260 @@
+.note-editor-page {
+  min-height: 100vh;
+  background-color: #f0f4f4;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.note-editor-container {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(24, 113, 113, 0.1);
+  padding: 32px;
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.note-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.note-editor-header h2 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #187171;
+}
+
+.note-editor-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-cancel {
+  padding: 10px 20px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-cancel:hover {
+  border-color: #aaa;
+  color: #333;
+}
+
+.btn-save {
+  padding: 10px 20px;
+  background-color: #187171;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-save:hover {
+  background-color: #145f5f;
+}
+
+.note-title-input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 20px;
+  font-weight: 600;
+  border: 1px solid #cce0e0;
+  border-radius: 8px;
+  outline: none;
+  transition: border 0.2s;
+  color: #1a1a1a;
+  box-sizing: border-box;
+}
+
+.note-title-input:focus {
+  border-color: #187171;
+}
+
+.note-title-input::placeholder {
+  color: #bbb;
+}
+
+.category-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.category-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+}
+
+.category-select {
+  padding: 10px 14px;
+  border: 1px solid #cce0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #333;
+  outline: none;
+  cursor: pointer;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+.category-select:focus {
+  border-color: #187171;
+}
+
+.new-category-inline {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.new-category-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #cce0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+.new-category-input:focus {
+  border-color: #187171;
+}
+
+.btn-create-category {
+  padding: 10px 16px;
+  background-color: #187171;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-create-category:hover {
+  background-color: #145f5f;
+}
+
+.btn-cancel-category {
+  padding: 10px 16px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.btn-cancel-category:hover {
+  border-color: #aaa;
+  color: #333;
+}
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px;
+  background-color: #f8fafa;
+  border-radius: 8px;
+  border: 1px solid #e0eeee;
+}
+
+.toolbar-btn {
+  padding: 6px 12px;
+  border: 1px solid #cce0e0;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: all 0.2s;
+}
+
+.toolbar-btn:hover {
+  background-color: #e8f4f4;
+  border-color: #187171;
+  color: #187171;
+}
+
+.toolbar-btn.active {
+  background-color: #187171;
+  color: white;
+  border-color: #187171;
+}
+
+.note-editor-content {
+  border: 1px solid #cce0e0;
+  border-radius: 8px;
+  padding: 16px;
+  min-height: 300px;
+  font-size: 15px;
+  line-height: 1.7;
+  color: #333;
+  box-sizing: border-box;
+}
+
+.note-editor-content:focus-within {
+  border-color: #187171;
+}
+
+.ProseMirror {
+  outline: none;
+  min-height: 260px;
+}
+
+.ProseMirror p {
+  margin: 0 0 8px;
+}
+
+.ProseMirror h1 {
+  font-size: 24px;
+  color: #187171;
+}
+
+.ProseMirror h2 {
+  font-size: 20px;
+  color: #187171;
+}
+
+.ProseMirror ul {
+  padding-left: 20px;
+}
+
+.ProseMirror ol {
+  padding-left: 20px;
+}
+
+.ProseMirror code {
+  background-color: #e8f4f4;
+  color: #187171;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+.ProseMirror pre {
+  background-color: #1a1a1a;
+  color: #f0f0f0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-family: monospace;
+  overflow-x: auto;
+}
