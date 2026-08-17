@@ -58,8 +58,7 @@ export function NotesProvider({ children }) {
       title,
       content,
       categoryName: categoryName || 'General',
-      createdAt: now,
-      updatedAt: now
+      createdAt: now
     }
     setNotes(prev => [...prev, newNote])
     setCategories(prev => prev.map(cat =>
