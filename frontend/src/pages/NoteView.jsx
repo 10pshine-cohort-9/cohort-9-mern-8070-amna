@@ -68,7 +68,9 @@ function NoteView() {
           >
             {note.categoryName}
           </span>
-          <span className="note-date">Updated: {note.createdAt}</span>
+          <span className="note-date">
+                {note.updatedAt ? `Updated: ${note.updatedAt}` : `Created: ${note.createdAt}`}
+          </span>
         </div>
 
         <h1 className="note-view-title">{note.title}</h1>

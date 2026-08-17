@@ -5,7 +5,6 @@ import './CategoryView.css'
 
 function CategoryView() {
   const { categoryName: encodedName } = useParams()
-  const categoryName = decodeURIComponent(encodedName)
   const { notes, categories, deleteNote, moveNotes } = useNotes()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
@@ -206,6 +205,14 @@ function CategoryView() {
         <div className="notes-list">
           {filteredNotes.map(note => (
             <div key={note.id} className="note-card-wrapper">
+              {isMoveMode && (
+                <input
+                  type="checkbox"
+                  className="note-checkbox"
+                  checked={selectedNotes.includes(note.id)}
+                  onChange={() => handleNoteCheck(note.id)}
+                />
+              )}
               <button
                 className={`note-card ${isMoveMode ? 'note-card--selectable' : ''} ${selectedNotes.includes(note.id) ? 'note-card--selected' : ''}`}
                 onClick={() => {
@@ -216,19 +223,12 @@ function CategoryView() {
                   }
                 }}
               >
-                {isMoveMode && (
-                  <input
-                    type="checkbox"
-                    className="note-checkbox"
-                    checked={selectedNotes.includes(note.id)}
-                    onChange={() => handleNoteCheck(note.id)}
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                )}
-                <div className="note-card-body">
-                  <h3 className="note-title">{note.title}</h3>
-                  <p className="note-date">Updated: {note.createdAt}</p>
-                </div>
+                <span className="note-card-body">
+                  <span className="note-title">{note.title}</span>
+                  <span className="note-date">
+                    {note.updatedAt ? `Updated: ${note.updatedAt}` : `Created: ${note.createdAt}`}
+                  </span>
+                </span>
               </button>
               {!isMoveMode && (
                 <div className="note-card-actions">

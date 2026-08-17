@@ -52,12 +52,14 @@ export function NotesProvider({ children }) {
   }
 
   const addNote = (title, content, categoryName) => {
+    const now = new Date().toLocaleDateString()
     const newNote = {
       id: Date.now(),
       title,
       content,
       categoryName: categoryName || 'General',
-      createdAt: new Date().toLocaleDateString()
+      createdAt: now,
+      updatedAt: now
     }
     setNotes(prev => [...prev, newNote])
     setCategories(prev => prev.map(cat =>
@@ -79,9 +81,9 @@ export function NotesProvider({ children }) {
 
   const editNote = (id, title, content, newCategoryName) => {
     const oldNote = notes.find(n => n.id === id)
+    const updatedAt = new Date().toLocaleDateString()
 
     if (newCategoryName && newCategoryName !== oldNote.categoryName) {
-      // category change hui
       setCategories(prev => prev.map(cat => {
         if (cat.name === oldNote.categoryName) {
           return { ...cat, noteCount: cat.noteCount - 1 }
@@ -93,12 +95,12 @@ export function NotesProvider({ children }) {
       }))
       setNotes(prev => prev.map(n =>
         n.id === id
-          ? { ...n, title, content, categoryName: newCategoryName }
+          ? { ...n, title, content, categoryName: newCategoryName, updatedAt }
           : n
       ))
     } else {
       setNotes(prev => prev.map(n =>
-        n.id === id ? { ...n, title, content } : n
+        n.id === id ? { ...n, title, content, updatedAt } : n
       ))
     }
   }

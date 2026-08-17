@@ -8,7 +8,6 @@ import './NoteEditor.css'
 function NoteEditor() {
   const { categories, addCategory, addNote, editNote, notes } = useNotes()
   const { categoryName: encodedCategoryName, noteId } = useParams()
-  const categoryName = encodedCategoryName ? decodeURIComponent(encodedCategoryName) : null
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [error, setError] = useState('')
