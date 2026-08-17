@@ -6,8 +6,6 @@ import NewCategoryModal from '../components/dashboard/NewCategoryModal'
 import { useNotes } from '../context/NotesContext'
 import './Dashboard.css'
 
-const colors = ['#7B5EA7', '#2E86AB', '#C17D3C', '#E05C8A', '#3DAA6E', '#E07B39']
-
 function Dashboard() {
   const { categories, notes, deleteCategory, addCategory } = useNotes()
   const [showCategoryModal, setShowCategoryModal] = useState(false)
@@ -17,7 +15,7 @@ function Dashboard() {
   const handleDeleteCategory = (name, option) => {
     deleteCategory(name, option)
   }
-  
+
   const handleAddCategory = (name) => {
     return addCategory(name)
   }
@@ -65,65 +63,55 @@ function Dashboard() {
             )}
           </div>
 
-          {filteredCategories.length === 0
-            ? (
-              <div className="no-results">
-                <p>No categories found for "<strong>{searchQuery}</strong>"</p>
-                <button
-                  className="btn-clear-search"
-                  onClick={() => setSearchQuery('')}
-                >
-                  ← Back to all categories
-                </button>
-              </div>
-            )
-            : (
-              <div className="categories-grid">
-                {filteredCategories.map(cat => (
-                  <CategoryCard
-                    key={cat.id}
-                    {...cat}
-                    onDelete={handleDeleteCategory}
-                  />
-                ))}
-              </div>
-            )
-          }
-          {searchQuery && filteredNotes.length > 0 && (
-            <div className="search-notes-section">
-              <h2>📝 Notes ({filteredNotes.length})</h2>
-              <div className="search-notes-list">
-                {filteredNotes.map(note => {
-                  const noteCat = categories.find(cat => cat.name === note.categoryName)
-                  return (
-                    <div
-                      key={note.id}
-                      className="search-note-card"
-                      onClick={() => navigate(`/notes/${note.id}`)}
-                    >
-                      <div className="search-note-body">
-                        <h3 className="search-note-title">{note.title}</h3>
-                        <span
-                          className="search-note-category"
-                          style={{ color: noteCat?.color }}
-                        >
-                          📁 {note.categoryName}
-                        </span>
-                      </div>
-                      <span className="search-note-date">{note.createdAt}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
+          {filteredCategories.length === 0 && !searchQuery && (
+            <p className="no-results">No categories yet.</p>
           )}
 
-          {searchQuery && filteredNotes.length === 0 && filteredCategories.length === 0 && (
+          {filteredCategories.length === 0 && searchQuery && filteredNotes.length === 0 && (
             <div className="no-results">
               <p>No results found for "<strong>{searchQuery}</strong>"</p>
             </div>
           )}
+
+          <div className="categories-grid">
+            {filteredCategories.map(cat => (
+              <CategoryCard
+                key={cat.id}
+                {...cat}
+                onDelete={handleDeleteCategory}
+              />
+            ))}
+          </div>
         </div>
+
+        {searchQuery && filteredNotes.length > 0 && (
+          <div className="search-notes-section">
+            <h2>📝 Notes ({filteredNotes.length})</h2>
+            <div className="search-notes-list">
+              {filteredNotes.map(note => {
+                const noteCat = categories.find(cat => cat.name === note.categoryName)
+                return (
+                  <button
+                    key={note.id}
+                    className="search-note-card"
+                    onClick={() => navigate(`/notes/${note.id}`)}
+                  >
+                    <div className="search-note-body">
+                      <h3 className="search-note-title">{note.title}</h3>
+                      <span
+                        className="search-note-category"
+                        style={{ color: noteCat?.color }}
+                      >
+                        📁 {note.categoryName}
+                      </span>
+                    </div>
+                    <span className="search-note-date">{note.createdAt}</span>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {showCategoryModal && (

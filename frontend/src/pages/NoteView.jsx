@@ -5,7 +5,7 @@ import './NoteView.css'
 
 function NoteView() {
   const { noteId } = useParams()
-  const { notes, categories, deleteNote, editNote } = useNotes()
+  const { notes, categories, editNote } = useNotes()
   const navigate = useNavigate()
   const [showCategoryModal, setShowCategoryModal] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('')
@@ -29,7 +29,7 @@ function NoteView() {
   const handleChangeCategory = () => {
     if (selectedCategory && selectedCategory !== note.categoryName) {
       editNote(note.id, note.title, note.content, selectedCategory)
-      navigate(`/category/${selectedCategory}`)
+      navigate(`/category/${encodeURIComponent(selectedCategory)}`)
     }
     setShowCategoryModal(false)
   }

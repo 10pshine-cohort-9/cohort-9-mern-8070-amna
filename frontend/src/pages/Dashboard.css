@@ -71,24 +71,8 @@
   color: white;
 }
 
-.categories-section h2 {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1a1a1a;
-  margin-bottom: 20px;
-}
-
-.categories-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
-}
-
-.dashboard-footer {
-  text-align: center;
-  padding: 20px;
-  font-size: 13px;
-  color: #aaa;
+.categories-section {
+  margin-bottom: 32px;
 }
 
 .categories-section-header {
@@ -99,7 +83,16 @@
 }
 
 .categories-section-header h2 {
-  margin-bottom: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
 }
 
 .btn-clear-search {
@@ -116,13 +109,9 @@
 }
 
 .no-results {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-top: 40px;
   color: #888;
   font-size: 15px;
+  margin-top: 20px;
 }
 
 .search-notes-section {
@@ -152,10 +141,17 @@
   border-radius: 10px;
   cursor: pointer;
   transition: box-shadow 0.2s;
+  width: 100%;
+  text-align: left;
 }
 
 .search-note-card:hover {
   box-shadow: 0 4px 12px rgba(24, 113, 113, 0.1);
+}
+
+.search-note-card:focus-visible {
+  outline: 2px solid #187171;
+  outline-offset: 2px;
 }
 
 .search-note-body {
@@ -178,5 +174,12 @@
 
 .search-note-date {
   font-size: 12px;
+  color: #aaa;
+}
+
+.dashboard-footer {
+  text-align: center;
+  padding: 20px;
+  font-size: 13px;
   color: #aaa;
 }

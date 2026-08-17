@@ -75,158 +75,6 @@
   background-color: #145f5f;
 }
 
-.category-search {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.category-search-input {
-  width: 100%;
-  padding: 12px 40px 12px 16px;
-  border: 1px solid #cce0e0;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  transition: border 0.2s;
-  box-sizing: border-box;
-}
-
-.category-search-input:focus {
-  border-color: #187171;
-}
-
-.category-search-clear {
-  position: absolute;
-  right: 12px;
-  background: none;
-  border: none;
-  color: #aaa;
-  cursor: pointer;
-  font-size: 16px;
-  transition: color 0.2s;
-}
-
-.category-search-clear:hover {
-  color: #187171;
-}
-
-.notes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.note-card {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border: 1px solid #e0eeee;
-  border-radius: 10px;
-  transition: box-shadow 0.2s;
-}
-
-.note-card:hover {
-  box-shadow: 0 4px 12px rgba(24, 113, 113, 0.1);
-}
-
-.note-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.note-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1a1a;
-  margin: 0;
-}
-
-.note-date {
-  font-size: 12px;
-  color: #aaa;
-  margin: 0;
-}
-
-.note-card-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.btn-edit {
-  padding: 8px 16px;
-  background-color: #187171;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: background 0.2s;
-}
-
-.btn-edit:hover {
-  background-color: #145f5f;
-}
-
-.btn-delete {
-  padding: 8px 16px;
-  background-color: transparent;
-  color: #e05c5c;
-  border: 2px solid #e05c5c;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  transition: all 0.2s;
-}
-
-.btn-delete:hover {
-  background-color: #e05c5c;
-  color: white;
-}
-
-.no-results {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-top: 20px;
-  color: #888;
-  font-size: 15px;
-}
-
-.no-notes {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-top: 40px;
-  color: #888;
-  font-size: 15px;
-}
-
-.btn-clear-search {
-  background: none;
-  border: none;
-  color: #187171;
-  font-size: 14px;
-  cursor: pointer;
-  font-weight: 600;
-}
-
-.btn-clear-search:hover {
-  text-decoration: underline;
-}
-
-.category-not-found {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-  margin-top: 100px;
-}
-
 .btn-move-category {
   padding: 10px 20px;
   background: transparent;
@@ -345,6 +193,79 @@
   cursor: not-allowed;
 }
 
+.category-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.category-search-input {
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  border: 1px solid #cce0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.2s;
+  box-sizing: border-box;
+}
+
+.category-search-input:focus {
+  border-color: #187171;
+}
+
+.category-search-clear {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #aaa;
+  cursor: pointer;
+  font-size: 16px;
+  transition: color 0.2s;
+}
+
+.category-search-clear:hover {
+  color: #187171;
+}
+
+.notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.note-card-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid #e0eeee;
+  border-radius: 10px;
+  transition: box-shadow 0.2s;
+}
+
+.note-card-wrapper:hover {
+  box-shadow: 0 4px 12px rgba(24, 113, 113, 0.1);
+}
+
+.note-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.note-card:focus-visible {
+  outline: 2px solid #187171;
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
 .note-card--selectable {
   cursor: pointer;
 }
@@ -362,10 +283,152 @@
   flex-shrink: 0;
 }
 
+.note-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.note-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.note-date {
+  font-size: 12px;
+  color: #aaa;
+  margin: 0;
+}
+
+.note-card-actions {
+  display: flex;
+  gap: 8px;
+  padding-right: 16px;
+}
+
+.btn-edit {
+  padding: 8px 16px;
+  background-color: #187171;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+
+.btn-edit:hover {
+  background-color: #145f5f;
+}
+
+.btn-delete {
+  padding: 8px 16px;
+  background-color: transparent;
+  color: #e05c5c;
+  border: 2px solid #e05c5c;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.btn-delete:hover {
+  background-color: #e05c5c;
+  color: white;
+}
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+  color: #888;
+  font-size: 15px;
+}
+
+.no-notes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 40px;
+  color: #888;
+  font-size: 15px;
+}
+
+.btn-clear-search {
+  background: none;
+  border: none;
+  color: #187171;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-clear-search:hover {
+  text-decoration: underline;
+}
+
 .no-categories {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+.modal h3 {
+  font-size: 18px;
+  color: #1a1a1a;
+}
+
+.modal p {
+  font-size: 14px;
+  color: #555;
+}
+
+.modal-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.modal-cancel {
+  padding: 10px 20px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  background: transparent;
+  color: #555;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.modal-cancel:hover {
+  border-color: #aaa;
+  color: #333;
 }
 
 .modal-confirm {
@@ -376,9 +439,16 @@
   border-radius: 8px;
   cursor: pointer;
   font-size: 14px;
-  transition: background 0.2s;
 }
 
 .modal-confirm:hover {
   background-color: #c94444;
+}
+
+.category-not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 100px;
 }

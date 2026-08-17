@@ -4,14 +4,13 @@ import { useNotes } from '../context/NotesContext'
 import './CategoryView.css'
 
 function CategoryView() {
-  const { categoryName } = useParams()
+  const { categoryName: encodedName } = useParams()
+  const categoryName = decodeURIComponent(encodedName)
   const { notes, categories, deleteNote, moveNotes } = useNotes()
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [noteToDelete, setNoteToDelete] = useState(null)
-
-  // Move notes state
   const [isMoveMode, setIsMoveMode] = useState(false)
   const [selectedNotes, setSelectedNotes] = useState([])
   const [targetCategory, setTargetCategory] = useState('')
@@ -85,13 +84,12 @@ function CategoryView() {
           </div>
           <button
             className="btn-new-note"
-            onClick={() => navigate(`/notes/new/${categoryName}`)}
+            onClick={() => navigate(`/notes/new/${encodeURIComponent(categoryName)}`)}
           >
             + New Note
           </button>
         </div>
 
-        {/* Move to Category button — sirf General mein */}
         {category.isDefault && categoryNotes.length > 0 && !isMoveMode && (
           <button
             className="btn-move-category"
@@ -101,7 +99,6 @@ function CategoryView() {
           </button>
         )}
 
-        {/* Category picker */}
         {showCategoryPicker && (
           <div className="category-picker">
             <p>Select a category to move notes into:</p>
@@ -142,7 +139,6 @@ function CategoryView() {
           </div>
         )}
 
-        {/* Move mode — checkboxes */}
         {isMoveMode && (
           <div className="move-mode-banner">
             <p>Moving to: <strong>{targetCategory}</strong></p>
@@ -200,7 +196,7 @@ function CategoryView() {
             <p>No notes in this category yet.</p>
             <button
               className="btn-new-note"
-              onClick={() => navigate(`/notes/new/${categoryName}`)}
+              onClick={() => navigate(`/notes/new/${encodeURIComponent(categoryName)}`)}
             >
               + Create your first note
             </button>
@@ -209,35 +205,33 @@ function CategoryView() {
 
         <div className="notes-list">
           {filteredNotes.map(note => (
-            <div
-              key={note.id}
-              className={`note-card ${isMoveMode ? 'note-card--selectable' : ''} ${selectedNotes.includes(note.id) ? 'note-card--selected' : ''}`}
-              onClick={() => {
-                if (isMoveMode) {
-                  handleNoteCheck(note.id)
-                } else {
-                  navigate(`/notes/${note.id}`)
-                }
-              }}
-            >
-              {isMoveMode && (
-                <input
-                  type="checkbox"
-                  className="note-checkbox"
-                  checked={selectedNotes.includes(note.id)}
-                  onChange={() => handleNoteCheck(note.id)}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              )}
-              <div className="note-card-body">
-                <h3 className="note-title">{note.title}</h3>
-                <p className="note-date">Updated: {note.createdAt}</p>
-              </div>
+            <div key={note.id} className="note-card-wrapper">
+              <button
+                className={`note-card ${isMoveMode ? 'note-card--selectable' : ''} ${selectedNotes.includes(note.id) ? 'note-card--selected' : ''}`}
+                onClick={() => {
+                  if (isMoveMode) {
+                    handleNoteCheck(note.id)
+                  } else {
+                    navigate(`/notes/${note.id}`)
+                  }
+                }}
+              >
+                {isMoveMode && (
+                  <input
+                    type="checkbox"
+                    className="note-checkbox"
+                    checked={selectedNotes.includes(note.id)}
+                    onChange={() => handleNoteCheck(note.id)}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                )}
+                <div className="note-card-body">
+                  <h3 className="note-title">{note.title}</h3>
+                  <p className="note-date">Updated: {note.createdAt}</p>
+                </div>
+              </button>
               {!isMoveMode && (
-                <div
-                  className="note-card-actions"
-                  onClick={(e) => e.stopPropagation()}
-                >
+                <div className="note-card-actions">
                   <button
                     className="btn-edit"
                     onClick={() => navigate(`/notes/edit/${note.id}`)}

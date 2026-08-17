@@ -9,11 +9,18 @@
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
   border: 1px solid #eee;
+  text-align: left;
+  width: 100%;
 }
 
 .category-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.category-card:focus-visible {
+  outline: 2px solid #187171;
+  outline-offset: 2px;
 }
 
 .category-card--default {
@@ -45,6 +52,10 @@
   font-weight: 600;
 }
 
+.category-menu-wrapper {
+  position: relative;
+}
+
 .category-menu {
   font-size: 20px;
   color: #aaa;
@@ -56,33 +67,6 @@
 
 .category-menu:hover {
   color: #187171;
-}
-
-.category-card-body h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.category-card-body p {
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: #888;
-}
-
-.category-card-footer {
-  margin-top: auto;
-}
-
-.note-count {
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-weight: 600;
-}
-
-.category-menu-wrapper {
-  position: relative;
 }
 
 .category-dropdown {
@@ -111,6 +95,29 @@
 
 .dropdown-delete:hover {
   background-color: #fff0f0;
+}
+
+.category-card-body h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.category-card-body p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #888;
+}
+
+.category-card-footer {
+  margin-top: auto;
+}
+
+.note-count {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
 }
 
 .modal-overlay {

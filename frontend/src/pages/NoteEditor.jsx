@@ -1,39 +1,46 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNotes } from '../context/NotesContext'
 import './NoteEditor.css'
 
 function NoteEditor() {
   const { categories, addCategory, addNote, editNote, notes } = useNotes()
-  const { categoryName, noteId } = useParams()
+  const { categoryName: encodedCategoryName, noteId } = useParams()
+  const categoryName = encodedCategoryName ? decodeURIComponent(encodedCategoryName) : null
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [error, setError] = useState('')
   const [selectedCategory, setSelectedCategory] = useState(categoryName || 'General')
+  const prevCategoryRef = useRef(categoryName || 'General')
   const [newCategoryName, setNewCategoryName] = useState('')
   const [showNewCategory, setShowNewCategory] = useState(false)
   const [, forceUpdate] = useState(0)
 
   const isEditMode = !!noteId && !categoryName
-  const isViewMode = !!noteId && !categoryName
   const existingNote = noteId ? notes.find(n => n.id === parseInt(noteId)) : null
 
   const editor = useEditor({
     extensions: [StarterKit],
-    content: existingNote ? existingNote.content : '<p>Start writing your note here...</p>',
+    content: '',
     onUpdate: () => forceUpdate(n => n + 1),
     onSelectionUpdate: () => forceUpdate(n => n + 1),
     onTransaction: () => forceUpdate(n => n + 1),
   })
 
   useEffect(() => {
+    if (!editor) return
     if (existingNote) {
       setTitle(existingNote.title)
       setSelectedCategory(existingNote.categoryName)
+      editor.commands.setContent(existingNote.content)
+    } else {
+      setTitle('')
+      setSelectedCategory(categoryName || 'General')
+      editor.commands.setContent('')
     }
-  }, [existingNote])
+  }, [editor, existingNote, categoryName])
 
   const handleSave = () => {
     if (title.trim() === '') {
@@ -47,10 +54,10 @@ function NoteEditor() {
 
     if (isEditMode && existingNote) {
       editNote(existingNote.id, title, editor.getHTML())
-      navigate(`/category/${existingNote.categoryName}`)
+      navigate(`/category/${encodeURIComponent(existingNote.categoryName)}`)
     } else {
       addNote(title, editor.getHTML(), selectedCategory)
-      navigate(`/category/${selectedCategory}`)
+      navigate(`/category/${encodeURIComponent(selectedCategory)}`)
     }
   }
 
@@ -91,6 +98,7 @@ function NoteEditor() {
               value={selectedCategory}
               onChange={(e) => {
                 if (e.target.value === '__new__') {
+                  prevCategoryRef.current = selectedCategory
                   setShowNewCategory(true)
                 } else {
                   setSelectedCategory(e.target.value)
@@ -135,7 +143,7 @@ function NoteEditor() {
                   className="btn-cancel-category"
                   onClick={() => {
                     setShowNewCategory(false)
-                    setSelectedCategory('General')
+                    setSelectedCategory(prevCategoryRef.current)
                     setNewCategoryName('')
                   }}
                 >
