@@ -1,10 +1,12 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import './CategoryCard.css'
 
 function CategoryCard({ name, description, noteCount, isDefault, color, onDelete }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [deleteOption, setDeleteOption] = useState('move')
+  const navigate = useNavigate()
 
   const handleDeleteConfirm = () => {
     onDelete(name, deleteOption)
@@ -13,7 +15,17 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
 
   return (
     <>
-      <div className={`category-card ${isDefault ? 'category-card--default' : ''}`}>
+      <div
+        className={`category-card ${isDefault ? 'category-card--default' : ''}`}
+        onClick={() => navigate(`/category/${encodeURIComponent(name)}`)}
+        tabIndex={0}
+        role="button"
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            navigate(`/category/${encodeURIComponent(name)}`)
+          }
+        }}
+      >
         <div className="category-card-top">
           <div className="category-icon" style={{ backgroundColor: `${color}20`, color: color }}>
             {isDefault ? '📁' : '📂'}
@@ -24,7 +36,10 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
               <div className="category-menu-wrapper">
                 <button
                   className="category-menu"
-                  onClick={() => setMenuOpen(!menuOpen)}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setMenuOpen(!menuOpen)
+                  }}
                   aria-expanded={menuOpen}
                   aria-label="Category options"
                 >⋮</button>
@@ -32,7 +47,8 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
                   <div className="category-dropdown">
                     <button
                       className="dropdown-delete"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation()
                         setMenuOpen(false)
                         setShowModal(true)
                       }}
@@ -59,7 +75,12 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
       </div>
 
       {showModal && (
-        <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="delete-modal-title"
+        >
           <div className="modal">
             <h3 id="delete-modal-title">Delete "{name}"?</h3>
             <p>This category contains <strong>{noteCount} notes</strong>.</p>
