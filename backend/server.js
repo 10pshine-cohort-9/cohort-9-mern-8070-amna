@@ -28,12 +28,16 @@ app.use(notFound)
 app.use(errorHandler)
 
 const startServer = async () => {
-  await connectDB()
-  
-  const PORT = process.env.PORT || 5000
-  app.listen(PORT, () => {
-    logger.info(`Server started on port ${PORT}`)
-  })
+  try {
+    await connectDB()
+    const PORT = process.env.PORT || 5000
+    app.listen(PORT, () => {
+      logger.info(`Server started on port ${PORT}`)
+    })
+  } catch (error) {
+    logger.error(`Server startup error: ${error.message}`)
+    process.exit(1)
+  }
 }
 
 startServer()
