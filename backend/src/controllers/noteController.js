@@ -3,9 +3,8 @@ const Category = require('../models/Category')
 const pino = require('pino')
 
 const logger = pino({ level: 'info' })
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
-// @desc Get all notes for a user
-// @route GET /api/notes
 const getNotes = async (req, res) => {
   try {
     const notes = await Note.find({ userId: req.user.id })
@@ -18,8 +17,6 @@ const getNotes = async (req, res) => {
   }
 }
 
-// @desc Get notes by category
-// @route GET /api/notes/category/:categoryId
 const getNotesByCategory = async (req, res) => {
   try {
     const notes = await Note.find({
@@ -34,13 +31,18 @@ const getNotesByCategory = async (req, res) => {
   }
 }
 
-// @desc Create a note
-// @route POST /api/notes
 const createNote = async (req, res) => {
   try {
     const { title, content, categoryId } = req.body
 
-    const category = await Category.findById(categoryId)
+    if (!title || !content || !categoryId) {
+      return res.status(400).json({ message: 'All fields are required' })
+    }
+
+    const category = await Category.findOne({
+      _id: categoryId,
+      userId: req.user.id
+    })
     if (!category) {
       return res.status(404).json({ message: 'Category not found' })
     }
@@ -60,8 +62,6 @@ const createNote = async (req, res) => {
   }
 }
 
-// @desc Update a note
-// @route PUT /api/notes/:id
 const updateNote = async (req, res) => {
   try {
     const note = await Note.findById(req.params.id)
@@ -76,9 +76,19 @@ const updateNote = async (req, res) => {
 
     const { title, content, categoryId } = req.body
 
+    if (categoryId) {
+      const category = await Category.findOne({
+        _id: categoryId,
+        userId: req.user.id
+      })
+      if (!category) {
+        return res.status(404).json({ message: 'Category not found' })
+      }
+      note.categoryId = categoryId
+    }
+
     note.title = title || note.title
     note.content = content || note.content
-    note.categoryId = categoryId || note.categoryId
 
     await note.save()
 
@@ -90,8 +100,6 @@ const updateNote = async (req, res) => {
   }
 }
 
-// @desc Delete a note
-// @route DELETE /api/notes/:id
 const deleteNote = async (req, res) => {
   try {
     const note = await Note.findById(req.params.id)
@@ -114,13 +122,18 @@ const deleteNote = async (req, res) => {
   }
 }
 
-// @desc Move notes to another category
-// @route PUT /api/notes/move
 const moveNotes = async (req, res) => {
   try {
     const { noteIds, targetCategoryId } = req.body
 
-    const targetCategory = await Category.findById(targetCategoryId)
+    if (!noteIds || !targetCategoryId) {
+      return res.status(400).json({ message: 'noteIds and targetCategoryId required' })
+    }
+
+    const targetCategory = await Category.findOne({
+      _id: targetCategoryId,
+      userId: req.user.id
+    })
     if (!targetCategory) {
       return res.status(404).json({ message: 'Target category not found' })
     }
@@ -138,18 +151,20 @@ const moveNotes = async (req, res) => {
   }
 }
 
-// @desc Search notes
-// @route GET /api/notes/search?q=query
 const searchNotes = async (req, res) => {
   try {
     const { q } = req.query
 
+    if (!q || typeof q !== 'string') {
+      return res.status(400).json({ message: 'Search query required' })
+    }
+
     const notes = await Note.find({
       userId: req.user.id,
-      title: { $regex: q, $options: 'i' }
+      title: { $regex: escapeRegex(q), $options: 'i' }
     }).populate('categoryId', 'name color')
 
-    logger.info(`Search results for: ${q}`)
+    logger.info(`Search results for user: ${req.user.id}`)
     res.status(200).json(notes)
   } catch (error) {
     logger.error(`Search notes error: ${error.message}`)

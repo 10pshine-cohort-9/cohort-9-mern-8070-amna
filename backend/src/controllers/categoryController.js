@@ -3,6 +3,7 @@ const Note = require('../models/Notes')
 const pino = require('pino')
 
 const logger = pino({ level: 'info' })
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 const getCategories = async (req, res) => {
     try {
@@ -20,7 +21,7 @@ const createCategory = async (req, res) => {
         const {name, color} = req.body
 
         const existing = await Category.findOne({
-            name: { $regex: new RegExp(`^${name}$`, 'i')},
+            name: { $regex: new RegExp(`^${escapeRegex(name)}$`, 'i') },
             userId: req.user.id
         })
 

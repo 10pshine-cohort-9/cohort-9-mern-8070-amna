@@ -15,7 +15,6 @@ const logger = pino({level: "info"})
 
 app.use(express.json())
 app.use(pinoHTTP({logger}))
-connectDB()
 
 app.get("/" , (req, res) => {
     res.json({message: "Notes App API is running"})
@@ -28,7 +27,13 @@ app.use('/api/notes', noteRoutes)
 app.use(notFound)
 app.use(errorHandler)
 
-const PORT = process.env.PORT || 5000
-app.listen(PORT, () => {
+const startServer = async () => {
+  await connectDB()
+  
+  const PORT = process.env.PORT || 5000
+  app.listen(PORT, () => {
     logger.info(`Server started on port ${PORT}`)
-})
+  })
+}
+
+startServer()

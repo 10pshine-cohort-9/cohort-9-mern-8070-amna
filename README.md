@@ -141,7 +141,7 @@ cohort-9-mern-8070-amna/
       models/
         User.js
         Category.js
-        Note.js
+        Notes.js
       routes/
         authRoutes.js
         categoryRoutes.js

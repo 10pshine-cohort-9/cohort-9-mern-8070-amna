@@ -3,13 +3,29 @@ const Category = require("../models/Category")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const pino = require("pino")
+const mongoose = require('mongoose')
 
 const logger = pino({level: "info"})
 
 // @route POST /api/auth/signup
 const signup = async (req, res) => {
+    const session = await mongoose.startSession()
+    session.startTransaction()
+
     try {
         const {name, email, password} = req.body
+
+        if (!name || !email || !password) {
+            return res.status(400).json({ message: 'All fields are required' })
+        }
+    
+        if (typeof email !== 'string' || typeof password !== 'string') {
+            return res.status(400).json({ message: 'Invalid input' })
+        }
+    
+        if (password.length < 8) {
+            return res.status(400).json({ message: 'Password must be at least 8 characters' })
+        }
 
         const existingUser = await User.findOne({email})
         if (existingUser) {
@@ -19,37 +35,42 @@ const signup = async (req, res) => {
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
 
-        const  user = await User.create({
-            name, 
+        const user = await User.create([{
+            name,
             email,
             password: hashedPassword
-        })
+        }], { session })
 
-        await Category.create({
+        await Category.create([{
             name: 'General',
             description: 'All your general notes',
             isDefault: true,
             color: '#187171',
-            userId: user._id
-        })
+            userId: user[0]._id
+        }], { session })
+
+        await session.commitTransaction()
+        session.endSession()
 
         const token = jwt.sign(
-            {id: user._id},
+            { id: user[0]._id },
             process.env.JWT_SECRET,
-            {expiresIn: "7d"}
+            { expiresIn: '7d' }
         )
 
-        logger.info(`New user registered: ${email}`)
+        logger.info(`New user registered: ${user[0]._id}`)
 
         res.status(201).json({
-            token, 
-            user:{
-                id: user._id,
-                name: user.name,
-                email: user.email
+            token,
+            user: {
+                id: user[0]._id,
+                name: user[0].name,
+                email: user[0].email
             }
         })
     } catch (error) {
+        await session.abortTransaction()
+        session.endSession()
         logger.error(`Signup error: ${error.message}`)
         res.status(500).json({ message: 'Server error' })
     }
@@ -59,14 +80,17 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
     try {
         const {email, password} = req.body
+        if (!email || !password) {
+            return res.status(400).json({ message: 'All fields are required' })
+        }
         const user = await User.findOne({email})
         if (!user) { 
-            return res.json(401).json({message: 'Invalid credentials'})
+            return res.status(401).json({message: 'Invalid credentials'})
         }
 
         const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
-            return res.json(401).json({message: 'Invalid credentials'})
+            return res.status(401).json({message: 'Invalid credentials'})
         }
 
         const token = jwt.sign(
@@ -75,7 +99,7 @@ const login = async (req, res) => {
             { expiresIn: '7d' }
         )
 
-        logger.info(`User logged in: ${email}`)
+        logger.info(`User logged in: ${user._id}`)
 
         res.status(200).json({
             token,
