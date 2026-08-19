@@ -75,8 +75,11 @@ const signup = async (req, res) => {
         })
   
     } catch (error) {
-      logger.error(`Signup error: ${error.message}`)
-      res.status(500).json({ message: 'Server error' })
+        if (error.code === 11000) {
+            return res.status(409).json({ message: 'User already exists' })
+        }
+        logger.error(`Signup error: ${error.message}`)
+        res.status(500).json({ message: 'Server error' })
     }
 }
 

@@ -31,9 +31,15 @@ const startServer = async () => {
   try {
     await connectDB()
     const PORT = process.env.PORT || 5000
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       logger.info(`Server started on port ${PORT}`)
     })
+
+    server.on('error', (error) => {
+      logger.error(`HTTP server error: ${error.message}`)
+      process.exit(1)
+    })
+
   } catch (error) {
     logger.error(`Server startup error: ${error.message}`)
     process.exit(1)
