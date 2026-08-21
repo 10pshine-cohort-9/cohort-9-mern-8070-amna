@@ -91,3 +91,7 @@
   width: 100%;
   box-sizing: border-box;
 }
+.password-hint {
+  font-size: 12px;
+  color: #e05c5c;
+}

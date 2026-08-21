@@ -1,5 +1,6 @@
 import { useNavigate, Link} from "react-router-dom"
 import { useState} from "react"
+import api from '../../api/axios'
 import './Login.css'
 
 function Login() {
@@ -7,34 +8,26 @@ function Login() {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
 
-    const mockUser = {
-        email: "test@test.com",
-        password: '123456'
-    }
-
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault()
         if (email === '' || password === '') {
             setError('Please fill in all fields.')
             return
         }
-        const defaultUser = { email: 'test@test.com', password: '123456' }
-        const savedUser = (() => {
-            try {
-                return JSON.parse(localStorage.getItem('mockUser'))
-            } catch {
-                return null
-            }
-        })()
-        if (
-            (email === defaultUser.email && password === defaultUser.password) ||
-            (savedUser && email === savedUser.email && password === savedUser.password)
-        ) {
+
+        try{
+            setLoading(true)
+            const res = await api.post('/auth/login', { email, password })
+            localStorage.setItem('token', res.data.token)
             localStorage.setItem('isLoggedIn', 'true')
+            localStorage.setItem('user', JSON.stringify(res.data.user))
             navigate('/dashboard')
-        } else {
-            setError('Invalid credentials. Try again or sign up.')
+        } catch (err) {
+            setError(err.response?.data?.message || 'Login failed. Try again.')
+        } finally {
+            setLoading(false)
         }
     }    
 
@@ -49,7 +42,10 @@ function Login() {
                       type="email"
                       placeholder="Enter Email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
+                      onChange={(e) => {
+                        setEmail(e.target.value)
+                        setError('')
+                    }}
                     />
                     <label htmlFor="password">Password</label>
                     <input
@@ -57,10 +53,13 @@ function Login() {
                       type="password"
                       placeholder="Enter Password"
                       value={password}
-                      onChange={(e) => setPassword(e.target.value)}
+                      onChange={(e) => {
+                        setPassword(e.target.value)
+                        setError('')
+                    }}
                     />
                     {error && <p className="error-msg">{error}</p>}
-                    <button type="submit">Login</button>
+                    <button type="submit" disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
                     <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
                 </form>
             </div>

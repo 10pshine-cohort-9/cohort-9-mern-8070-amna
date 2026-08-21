@@ -8,6 +8,8 @@ function Navbar({ onSearch }) {
 
   const handleLogout = () => {
     localStorage.removeItem('isLoggedIn')
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
     navigate('/login')
   }
 

@@ -2,6 +2,7 @@ const express = require('express')
 const dotenv = require('dotenv')
 const pino = require("pino")
 const pinoHTTP = require("pino-http")
+const cors = require('cors')
 const connectDB = require("./src/config/db")
 const authRoutes = require('./src/routes/authRoutes')
 const categoryRoutes = require('./src/routes/categoryRoutes')
@@ -13,6 +14,10 @@ dotenv.config()
 const app = express()
 const logger = pino({level: "info"})
 
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}))
 app.use(express.json())
 app.use(pinoHTTP({logger}))
 

@@ -9,9 +9,10 @@ function NoteView() {
   const navigate = useNavigate()
   const [showCategoryModal, setShowCategoryModal] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const note = notes.find(n => n.id === parseInt(noteId))
-  const category = note ? categories.find(cat => cat.name === note.categoryName) : null
+  const note = notes.find(n => n._id === noteId)
+  const category = note ? categories.find(cat => cat._id === note.categoryId?._id) : null
 
   if (!note) {
     return (
@@ -26,10 +27,17 @@ function NoteView() {
     )
   }
 
-  const handleChangeCategory = () => {
-    if (selectedCategory && selectedCategory !== note.categoryName) {
-      editNote(note.id, note.title, note.content, selectedCategory)
-      navigate(`/category/${encodeURIComponent(selectedCategory)}`)
+  const handleChangeCategory = async () => {
+    if (selectedCategory && selectedCategory !== note.categoryId?.name) {
+      try {
+        setLoading(true)
+        await editNote(note._id, note.title, note.content, selectedCategory)
+        navigate(`/category/${selectedCategory}`)
+      } catch (err) {
+        console.error('Error changing category:', err)
+      } finally {
+        setLoading(false)
+      }
     }
     setShowCategoryModal(false)
   }
@@ -46,7 +54,7 @@ function NoteView() {
             <button
               className="btn-change-category"
               onClick={() => {
-                setSelectedCategory(note.categoryName)
+                setSelectedCategory(note.categoryId?.name || '')
                 setShowCategoryModal(true)
               }}
             >
@@ -54,7 +62,7 @@ function NoteView() {
             </button>
             <button
               className="btn-edit"
-              onClick={() => navigate(`/notes/edit/${note.id}`)}
+              onClick={() => navigate(`/notes/edit/${note._id}`)}
             >
               Edit
             </button>
@@ -64,12 +72,18 @@ function NoteView() {
         <div className="note-view-meta">
           <span
             className="note-category-badge"
-            style={{ backgroundColor: `${category?.color}20`, color: category?.color }}
+            style={{
+              backgroundColor: `${category?.color}20`,
+              color: category?.color
+            }}
           >
-            {note.categoryName}
+            {note.categoryId?.name}
           </span>
           <span className="note-date">
-                {note.updatedAt ? `Updated: ${note.updatedAt}` : `Created: ${note.createdAt}`}
+            {note.updatedAt
+              ? `Updated: ${new Date(note.updatedAt).toLocaleDateString()}`
+              : `Created: ${new Date(note.createdAt).toLocaleDateString()}`
+            }
           </span>
         </div>
 
@@ -93,7 +107,7 @@ function NoteView() {
               onChange={(e) => setSelectedCategory(e.target.value)}
             >
               {categories.map(cat => (
-                <option key={cat.id} value={cat.name}>
+                <option key={cat._id} value={cat.name}>
                   {cat.name}
                 </option>
               ))}
@@ -108,8 +122,9 @@ function NoteView() {
               <button
                 className="modal-confirm-teal"
                 onClick={handleChangeCategory}
+                disabled={loading}
               >
-                Move Note
+                {loading ? 'Moving...' : 'Move Note'}
               </button>
             </div>
           </div>

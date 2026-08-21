@@ -11,14 +11,19 @@ function NoteEditor() {
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [error, setError] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState(categoryName || 'General')
-  const prevCategoryRef = useRef(categoryName || 'General')
+  const [selectedCategory, setSelectedCategory] = useState(categoryName || '')
+  const prevCategoryRef = useRef(categoryName || '')
   const [newCategoryName, setNewCategoryName] = useState('')
   const [showNewCategory, setShowNewCategory] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [, forceUpdate] = useState(0)
 
   const isEditMode = !!noteId && !categoryName
-  const existingNote = noteId ? notes.find(n => n.id === parseInt(noteId)) : null
+  const existingNote = noteId ? notes.find(n => n._id === noteId) : null
+
+  console.log('noteId from params:', noteId)
+  console.log('all note ids:', notes.map(n => n._id))
+  console.log('existingNote found:', existingNote)
 
   const editor = useEditor({
     extensions: [StarterKit],
@@ -29,19 +34,21 @@ function NoteEditor() {
   })
 
   useEffect(() => {
+    if (categories.length > 0 && !selectedCategory) {
+      setSelectedCategory(categoryName || categories[0]?.name || '')
+    }
+  }, [categories])
+
+  useEffect(() => {
     if (!editor) return
     if (existingNote) {
       setTitle(existingNote.title)
-      setSelectedCategory(existingNote.categoryName)
+      setSelectedCategory(existingNote.categoryId?.name || '')
       editor.commands.setContent(existingNote.content)
-    } else {
-      setTitle('')
-      setSelectedCategory(categoryName || 'General')
-      editor.commands.setContent('')
     }
-  }, [editor, existingNote, categoryName])
+  }, [editor, existingNote])
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (title.trim() === '') {
       setError('Please add a title.')
       return
@@ -51,12 +58,19 @@ function NoteEditor() {
       return
     }
 
-    if (isEditMode && existingNote) {
-      editNote(existingNote.id, title, editor.getHTML())
-      navigate(`/category/${existingNote.categoryName}`)
-    } else {
-      addNote(title, editor.getHTML(), selectedCategory)
-      navigate(`/category/${selectedCategory}`)
+    try {
+      setLoading(true)
+      if (isEditMode && existingNote) {
+        await editNote(existingNote._id, title, editor.getHTML())
+        navigate(`/category/${existingNote.categoryId?.name}`)
+      } else {
+        await addNote(title, editor.getHTML(), selectedCategory)
+        navigate(`/category/${selectedCategory}`)
+      }
+    } catch (err) {
+      setError('Failed to save note. Try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -70,8 +84,8 @@ function NoteEditor() {
             <button className="btn-cancel" onClick={() => navigate(-1)}>
               Cancel
             </button>
-            <button className="btn-save" onClick={handleSave}>
-              Save Note
+            <button className="btn-save" onClick={handleSave} disabled={loading}>
+              {loading ? 'Saving...' : 'Save Note'}
             </button>
           </div>
         </div>
@@ -106,7 +120,7 @@ function NoteEditor() {
               }}
             >
               {categories.map(cat => (
-                <option key={cat.id} value={cat.name}>
+                <option key={cat._id} value={cat.name}>
                   {cat.name}
                 </option>
               ))}
@@ -124,9 +138,9 @@ function NoteEditor() {
                 />
                 <button
                   className="btn-create-category"
-                  onClick={() => {
+                  onClick={async () => {
                     if (newCategoryName.trim() === '') return
-                    const success = addCategory(newCategoryName.trim())
+                    const success = await addCategory(newCategoryName.trim())
                     if (success) {
                       setSelectedCategory(newCategoryName.trim())
                       setNewCategoryName('')

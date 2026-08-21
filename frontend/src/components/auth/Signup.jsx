@@ -1,5 +1,6 @@
 import { useNavigate, Link } from 'react-router-dom'
 import { useState } from 'react'
+import api from '../../api/axios'
 import './Signup.css'
 
 function Signup() {
@@ -7,16 +8,24 @@ function Signup() {
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-        const [error, setError] = useState('')
+    const [error, setError] = useState('')
+    const [loading, setLoading] = useState(false)
 
-    const handleSignup = (e) => {
+    const handleSignup = async (e) => {
         e.preventDefault()
         if (name === '' || email === '' || password === '') {
             setError('Please fill in all fields.')
             return
-        } else {
-            localStorage.setItem('mockUser', JSON.stringify({ email, password }))
+        }
+
+        try {
+            setLoading(true)
+            const res = await api.post('/auth/signup', { name, email, password })
             navigate('/login')
+        } catch (err) {
+            setError(err.response?.data?.message || 'Signup failed. Try again.')
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -30,24 +39,36 @@ function Signup() {
                     type="text"
                     placeholder="Full Name"
                     value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    onChange={(e) => {
+                        setName(e.target.value)
+                        setError('')
+                    }}
                 />
                 <label htmlFor="email">Email</label>
                 <input
                     type="email"
                     placeholder="Email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                        setEmail(e.target.value)
+                        setError('')
+                    }}
                 />
                 <label htmlFor="password">Password</label>
                 <input
                     type="password"
                     placeholder="Password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                        setPassword(e.target.value)
+                        setError("")
+                    }}
                 />
+                {password.length > 0 && password.length < 8 && (
+                    <p className="password-hint">Password must be at least 8 characters</p>
+                )}
                 {error && <p className="error-msg">{error}</p>}
-                <button type="submit">Sign Up</button>
+                <button type="submit" disabled={loading}>{loading ? 'Creating account...' : 'Sign Up'}</button>
                 <p>Already have an account? <Link to="/login">Login</Link></p>
             </form>
         </div>

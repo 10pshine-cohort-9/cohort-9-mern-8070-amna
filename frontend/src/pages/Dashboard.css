@@ -183,3 +183,12 @@
   font-size: 13px;
   color: #aaa;
 }
+
+.dashboard-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #187171;
+}

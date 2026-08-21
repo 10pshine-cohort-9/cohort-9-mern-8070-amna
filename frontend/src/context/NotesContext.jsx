@@ -1,139 +1,163 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
+import api from '../api/axios'
 
 const NotesContext = createContext()
 
-const initialCategories = [
-  { id: 1, name: 'General', description: 'All your general notes', noteCount: 0, isDefault: true, color: '#187171' },
-  { id: 2, name: 'University', description: 'My academic journey', noteCount: 8, isDefault: false, color: '#7B5EA7' },
-  { id: 3, name: 'Development', description: 'Coding and projects', noteCount: 15, isDefault: false, color: '#2E86AB' },
-]
-
-const colors = ['#7B5EA7', '#2E86AB', '#C17D3C', '#E05C8A', '#3DAA6E', '#E07B39']
-
 export function NotesProvider({ children }) {
-  const [categories, setCategories] = useState(initialCategories)
+  const [categories, setCategories] = useState([])
   const [notes, setNotes] = useState([])
+  const [loading, setLoading] = useState(true)
 
-  const addCategory = (name) => {
-    const duplicate = categories.some(
-      cat => cat.name.toLowerCase() === name.toLowerCase()
-    )
-    if (duplicate) return false
-
-    const newCategory = {
-      id: Date.now(),
-      name,
-      description: 'My new category',
-      noteCount: 0,
-      isDefault: false,
-      color: colors[Math.floor(Math.random() * colors.length)]
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get("/categories")
+      setCategories(res.data)
+    } catch (error) {
+      console.error('Error fetching categories:', error)
     }
-    setCategories(prev => [...prev, newCategory])
-    return true
   }
 
-  const deleteCategory = (name, option) => {
-    const deletedCat = categories.find(cat => cat.name === name)
-    if (option === 'move') {
+  const fetchNotes = async () => {
+    try {
+      const res = await api.get('/notes')
+      setNotes(res.data)
+    } catch (error) {
+      console.error('Error fetching notes:', error)
+    }
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (token) {
+      Promise.all([fetchCategories(), fetchNotes()])
+        .finally(() => setLoading(false))
+    } else {
+      setLoading(false)
+    }
+  }, [])
+
+  const addCategory = async (name) => {
+    try {
+      const colors = ['#7B5EA7', '#2E86AB', '#C17D3C', '#E05C8A', '#3DAA6E', '#E07B39']
+      const color = colors[Math.floor(Math.random() * colors.length)]
+      const res = await api.post('/categories', { name, color })
+      setCategories(prev => [...prev, res.data])
+      return true
+    } catch (error) {
+      if (error.response?.status === 400) {
+        return false
+      }
+      console.error('Error creating category:', error)
+      return false
+    } 
+  }
+
+  const deleteCategory = async (name, option) => {
+    try {
+      const category = categories.find(cat => cat.name === name)
+      await api.delete(`/categories/${category._id}`, {
+        data: { option }
+      })
+
+      if (option === 'move') {
+        const generalCat = categories.find(cat => cat.isDefault)
+        setNotes(prev => prev.map(note =>
+          note.categoryId._id === category._id
+            ? { ...note, categoryId: { _id: generalCat._id, name: generalCat.name, color: generalCat.color } }
+            : note
+        ))
+      } else {
+        setNotes(prev => prev.filter(note => note.categoryId._id !== category._id))
+      }
+
+      setCategories(prev => prev.filter(cat => cat.name !== name))
+    } catch (error) {
+      console.error('Error deleting category:', error)
+    }
+  }
+
+
+  const addNote = async (title, content, categoryName) => {
+    try {
+      const category = categories.find(cat => cat.name === categoryName)
+
+      if (!category) {
+        console.error('Category not found:', categoryName)
+        return
+      }
+
+      await api.post('/notes', {
+        title,
+        content,
+        categoryId: category._id
+      })
+
+      // Note create hone ke baad fresh fetch karo
+      await fetchNotes()
+
+    } catch (error) {
+      console.error('Error creating note:', error)
+    }
+  }
+
+  const deleteNote = async (id) => {
+    try {
+      await api.delete(`/notes/${id}`)
+      setNotes(prev => prev.filter(n => n._id !== id))
+    } catch (error) {
+      console.error('Error deleting note:', error)
+    }
+  }
+
+  const editNote = async (id, title, content, newCategoryName) => {
+    try {
+      const updateData = { title, content }
+    
+      if (newCategoryName) {
+        const category = categories.find(cat => cat.name === newCategoryName)
+        updateData.categoryId = category._id
+      }
+    
+      await api.put(`/notes/${id}`, updateData)
+      
+      // Fresh fetch karo
+      await fetchNotes()
+    
+    } catch (error) {
+      console.error('Error updating note:', error)
+    }
+  }
+
+  const moveNotes = async (noteIds, targetCategoryName) => {
+    try {
+      const targetCategory = categories.find(cat => cat.name === targetCategoryName)
+      await api.put('/notes/move', {
+        noteIds,
+        targetCategoryId: targetCategory._id
+      })
       setNotes(prev => prev.map(note =>
-        note.categoryName === name
-          ? { ...note, categoryName: 'General' }
+        noteIds.includes(note._id)
+          ? { ...note, categoryId: { _id: targetCategory._id, name: targetCategory.name, color: targetCategory.color } }
           : note
       ))
-      setCategories(prev => prev.map(cat =>
-        cat.isDefault
-          ? { ...cat, noteCount: cat.noteCount + deletedCat.noteCount }
-          : cat
-      ).filter(cat => cat.name !== name))
-    } else {
-      setNotes(prev => prev.filter(note => note.categoryName !== name))
-      setCategories(prev => prev.filter(cat => cat.name !== name))
+    } catch (error) {
+      console.error('Error moving notes:', error)
     }
-  }
-
-  const addNote = (title, content, categoryName) => {
-    const now = new Date().toLocaleDateString()
-    const newNote = {
-      id: Date.now(),
-      title,
-      content,
-      categoryName: categoryName || 'General',
-      createdAt: now
-    }
-    setNotes(prev => [...prev, newNote])
-    setCategories(prev => prev.map(cat =>
-      cat.name === (categoryName || 'General')
-        ? { ...cat, noteCount: cat.noteCount + 1 }
-        : cat
-    ))
-  }
-
-  const deleteNote = (id) => {
-    const note = notes.find(n => n.id === id)
-    setNotes(prev => prev.filter(n => n.id !== id))
-    setCategories(prev => prev.map(cat =>
-      cat.name === note.categoryName
-        ? { ...cat, noteCount: cat.noteCount - 1 }
-        : cat
-    ))
-  }
-
-  const editNote = (id, title, content, newCategoryName) => {
-    const oldNote = notes.find(n => n.id === id)
-    const updatedAt = new Date().toLocaleDateString()
-
-    if (newCategoryName && newCategoryName !== oldNote.categoryName) {
-      setCategories(prev => prev.map(cat => {
-        if (cat.name === oldNote.categoryName) {
-          return { ...cat, noteCount: cat.noteCount - 1 }
-        }
-        if (cat.name === newCategoryName) {
-          return { ...cat, noteCount: cat.noteCount + 1 }
-        }
-        return cat
-      }))
-      setNotes(prev => prev.map(n =>
-        n.id === id
-          ? { ...n, title, content, categoryName: newCategoryName, updatedAt }
-          : n
-      ))
-    } else {
-      setNotes(prev => prev.map(n =>
-        n.id === id ? { ...n, title, content, updatedAt } : n
-      ))
-    }
-  }
-
-  const moveNotes = (noteIds, targetCategory) => {
-    const movingNotes = notes.filter(n => noteIds.includes(n.id))
-  
-    setNotes(prev => prev.map(n =>
-      noteIds.includes(n.id)
-        ? { ...n, categoryName: targetCategory }
-        : n
-    ))
-  
-    setCategories(prev => prev.map(cat => {
-      if (cat.name === 'General') {
-        return { ...cat, noteCount: cat.noteCount - movingNotes.length }
-      }
-      if (cat.name === targetCategory) {
-        return { ...cat, noteCount: cat.noteCount + movingNotes.length }
-      }
-      return cat
-    }))
   }
 
   return (
     <NotesContext.Provider value={{
       categories,
       notes,
+      loading,
       addCategory,
       deleteCategory,
       addNote,
-      deleteNote,
       editNote,
-      moveNotes
+      deleteNote,
+      moveNotes,
+      fetchCategories,
+      fetchNotes
     }}>
       {children}
     </NotesContext.Provider>

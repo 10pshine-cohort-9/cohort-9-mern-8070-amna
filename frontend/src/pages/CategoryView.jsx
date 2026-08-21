@@ -16,7 +16,7 @@ function CategoryView() {
   const [showCategoryPicker, setShowCategoryPicker] = useState(false)
 
   const category = categories.find(cat => cat.name === categoryName)
-  const categoryNotes = notes.filter(note => note.categoryName === categoryName)
+  const categoryNotes = notes.filter(note => note.categoryId?.name === categoryName)
   const userCategories = categories.filter(cat => !cat.isDefault)
 
   const filteredNotes = categoryNotes.filter(note =>
@@ -28,8 +28,8 @@ function CategoryView() {
     setShowDeleteModal(true)
   }
 
-  const confirmDelete = () => {
-    deleteNote(noteToDelete.id)
+  const confirmDelete = async () => {
+    await deleteNote(noteToDelete._id)
     setShowDeleteModal(false)
     setNoteToDelete(null)
   }
@@ -42,9 +42,9 @@ function CategoryView() {
     )
   }
 
-  const handleMoveConfirm = () => {
+  const handleMoveConfirm = async () => {
     if (selectedNotes.length === 0) return
-    moveNotes(selectedNotes, targetCategory)
+    await moveNotes(selectedNotes, targetCategory)
     setIsMoveMode(false)
     setSelectedNotes([])
     setTargetCategory('')
@@ -106,10 +106,7 @@ function CategoryView() {
                 <div className="no-categories">
                   <p>No categories available.</p>
                   <p>Create a category first from the dashboard.</p>
-                  <button
-                    className="btn-back"
-                    onClick={() => setShowCategoryPicker(false)}
-                  >
+                  <button className="btn-back" onClick={() => setShowCategoryPicker(false)}>
                     Cancel
                   </button>
                 </div>
@@ -118,7 +115,7 @@ function CategoryView() {
                 <div className="category-picker-list">
                   {userCategories.map(cat => (
                     <button
-                      key={cat.id}
+                      key={cat._id}
                       className="category-picker-item"
                       style={{ borderColor: cat.color, color: cat.color }}
                       onClick={() => handleCategorySelect(cat.name)}
@@ -126,10 +123,7 @@ function CategoryView() {
                       📁 {cat.name}
                     </button>
                   ))}
-                  <button
-                    className="btn-cancel-move"
-                    onClick={() => setShowCategoryPicker(false)}
-                  >
+                  <button className="btn-cancel-move" onClick={() => setShowCategoryPicker(false)}>
                     Cancel
                   </button>
                 </div>
@@ -204,29 +198,32 @@ function CategoryView() {
 
         <div className="notes-list">
           {filteredNotes.map(note => (
-            <div key={note.id} className="note-card-wrapper">
+            <div key={note._id} className="note-card-wrapper">
               {isMoveMode && (
                 <input
                   type="checkbox"
                   className="note-checkbox"
-                  checked={selectedNotes.includes(note.id)}
-                  onChange={() => handleNoteCheck(note.id)}
+                  checked={selectedNotes.includes(note._id)}
+                  onChange={() => handleNoteCheck(note._id)}
                 />
               )}
               <button
-                className={`note-card ${isMoveMode ? 'note-card--selectable' : ''} ${selectedNotes.includes(note.id) ? 'note-card--selected' : ''}`}
+                className={`note-card ${isMoveMode ? 'note-card--selectable' : ''} ${selectedNotes.includes(note._id) ? 'note-card--selected' : ''}`}
                 onClick={() => {
                   if (isMoveMode) {
-                    handleNoteCheck(note.id)
+                    handleNoteCheck(note._id)
                   } else {
-                    navigate(`/notes/${note.id}`)
+                    navigate(`/notes/${note._id}`)
                   }
                 }}
               >
                 <span className="note-card-body">
                   <span className="note-title">{note.title}</span>
                   <span className="note-date">
-                    {note.updatedAt ? `Updated: ${note.updatedAt}` : `Created: ${note.createdAt}`}
+                    {note.updatedAt
+                      ? `Updated: ${new Date(note.updatedAt).toLocaleDateString()}`
+                      : `Created: ${new Date(note.createdAt).toLocaleDateString()}`
+                    }
                   </span>
                 </span>
               </button>
@@ -234,7 +231,7 @@ function CategoryView() {
                 <div className="note-card-actions">
                   <button
                     className="btn-edit"
-                    onClick={() => navigate(`/notes/edit/${note.id}`)}
+                    onClick={() => navigate(`/notes/edit/${note._id}`)}
                   >
                     Edit
                   </button>
@@ -258,16 +255,10 @@ function CategoryView() {
             <h3>Delete "{noteToDelete?.title}"?</h3>
             <p>This note will be permanently deleted.</p>
             <div className="modal-buttons">
-              <button
-                className="modal-cancel"
-                onClick={() => setShowDeleteModal(false)}
-              >
+              <button className="modal-cancel" onClick={() => setShowDeleteModal(false)}>
                 Cancel
               </button>
-              <button
-                className="modal-confirm"
-                onClick={confirmDelete}
-              >
+              <button className="modal-confirm" onClick={confirmDelete}>
                 Delete Note
               </button>
             </div>
