@@ -27,6 +27,10 @@ A full-stack Notes App with user authentication, category management, and rich t
 - Jest frontend tests
 - SonarQube integration
 
+## Security Note
+JWT token is currently stored in localStorage for development purposes.
+In production, HttpOnly cookies should be used instead.
+
 ## Current Progress
 
 ### ✅ Frontend — Auth
@@ -164,9 +168,11 @@ cohort-9-mern-8070-amna/
 ```bash
 cd backend
 npm install
-# .env file banao — MONGODB_URI, JWT_SECRET, PORT add karo
+# make env file & add MONGODB_URI, JWT_SECRET, PORT
 npm run dev
 ```
+
+> Note: MongoDB Atlas or replica set required. Standalone MongoDB does not support transactions.
 
 ### Frontend
 ```bash
@@ -176,6 +182,7 @@ npm run dev
 ```
 
 ## Environment Variables
+
 ```text
 MONGODB_URI=your_mongodb_uri
 JWT_SECRET=your_jwt_secret

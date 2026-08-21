@@ -31,8 +31,12 @@ function NoteView() {
     if (selectedCategory && selectedCategory !== note.categoryId?.name) {
       try {
         setLoading(true)
-        await editNote(note._id, note.title, note.content, selectedCategory)
-        navigate(`/category/${selectedCategory}`)
+        const result = await editNote(note._id, note.title, note.content, selectedCategory)
+        if (result?.success) {
+          navigate(`/category/${encodeURIComponent(selectedCategory)}`)
+        } else {
+          console.error('Failed to change category:', result?.message)
+        }
       } catch (err) {
         console.error('Error changing category:', err)
       } finally {

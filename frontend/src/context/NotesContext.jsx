@@ -10,7 +10,7 @@ export function NotesProvider({ children }) {
 
   const fetchCategories = async () => {
     try {
-      const res = await api.get("/categories")
+      const res = await api.get('/categories')
       setCategories(res.data)
     } catch (error) {
       console.error('Error fetching categories:', error)
@@ -49,12 +49,18 @@ export function NotesProvider({ children }) {
       }
       console.error('Error creating category:', error)
       return false
-    } 
+    }
   }
 
   const deleteCategory = async (name, option) => {
     try {
       const category = categories.find(cat => cat.name === name)
+
+      if (!category) {
+        console.error('Category not found:', name)
+        return { success: false, message: 'Category not found' }
+      }
+
       await api.delete(`/categories/${category._id}`, {
         data: { option }
       })
@@ -71,32 +77,47 @@ export function NotesProvider({ children }) {
       }
 
       setCategories(prev => prev.filter(cat => cat.name !== name))
+      return { success: true }
     } catch (error) {
       console.error('Error deleting category:', error)
+      return { success: false, message: 'Failed to delete category' }
     }
   }
-
 
   const addNote = async (title, content, categoryName) => {
     try {
       const category = categories.find(cat => cat.name === categoryName)
-
-      if (!category) {
-        console.error('Category not found:', categoryName)
-        return
-      }
+      if (!category) return { success: false, message: 'Category not found' }
 
       await api.post('/notes', {
         title,
         content,
         categoryId: category._id
       })
-
-      // Note create hone ke baad fresh fetch karo
       await fetchNotes()
-
+      return { success: true }
     } catch (error) {
       console.error('Error creating note:', error)
+      return { success: false, message: 'Failed to create note' }
+    }
+  }
+
+  const editNote = async (id, title, content, newCategoryName) => {
+    try {
+      const updateData = { title, content }
+
+      if (newCategoryName) {
+        const category = categories.find(cat => cat.name === newCategoryName)
+        if (!category) return { success: false, message: 'Category not found' }
+        updateData.categoryId = category._id
+      }
+
+      await api.put(`/notes/${id}`, updateData)
+      await fetchNotes()
+      return { success: true }
+    } catch (error) {
+      console.error('Error updating note:', error)
+      return { success: false, message: 'Failed to update note' }
     }
   }
 
@@ -104,44 +125,27 @@ export function NotesProvider({ children }) {
     try {
       await api.delete(`/notes/${id}`)
       setNotes(prev => prev.filter(n => n._id !== id))
+      return { success: true }
     } catch (error) {
       console.error('Error deleting note:', error)
-    }
-  }
-
-  const editNote = async (id, title, content, newCategoryName) => {
-    try {
-      const updateData = { title, content }
-    
-      if (newCategoryName) {
-        const category = categories.find(cat => cat.name === newCategoryName)
-        updateData.categoryId = category._id
-      }
-    
-      await api.put(`/notes/${id}`, updateData)
-      
-      // Fresh fetch karo
-      await fetchNotes()
-    
-    } catch (error) {
-      console.error('Error updating note:', error)
+      return { success: false, message: 'Failed to delete note' }
     }
   }
 
   const moveNotes = async (noteIds, targetCategoryName) => {
     try {
       const targetCategory = categories.find(cat => cat.name === targetCategoryName)
+      if (!targetCategory) return { success: false, message: 'Category not found' }
+
       await api.put('/notes/move', {
         noteIds,
         targetCategoryId: targetCategory._id
       })
-      setNotes(prev => prev.map(note =>
-        noteIds.includes(note._id)
-          ? { ...note, categoryId: { _id: targetCategory._id, name: targetCategory.name, color: targetCategory.color } }
-          : note
-      ))
+      await fetchNotes()
+      return { success: true }
     } catch (error) {
       console.error('Error moving notes:', error)
+      return { success: false, message: 'Failed to move notes' }
     }
   }
 
