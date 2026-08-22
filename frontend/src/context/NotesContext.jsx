@@ -8,6 +8,12 @@ export function NotesProvider({ children }) {
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
   const fetchNotesRef = useRef(0)
+  const [token, setToken] = useState(localStorage.getItem('token'))
+
+  const logout = () => {
+    localStorage.removeItem('token')
+    setToken(null)
+  }
 
   const fetchCategories = async () => {
     try {
@@ -33,14 +39,17 @@ export function NotesProvider({ children }) {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
     if (token) {
+      setLoading(true)
+      fetchNotesRef.current = 0
       Promise.all([fetchCategories(), fetchNotes()])
         .finally(() => setLoading(false))
     } else {
+      setNotes([])
+      setCategories([])
       setLoading(false)
     }
-  }, [])
+  }, [token])
 
   const addCategory = async (name) => {
     try {
@@ -67,18 +76,28 @@ export function NotesProvider({ children }) {
         return { success: false, message: 'Category not found' }
       }
 
-      await api.delete(`/categories/${category._id}`, {
-        data: { option }
-      })
-
       if (option === 'move') {
         const generalCat = categories.find(cat => cat.isDefault)
+
+        if (!generalCat) {
+          console.error('No default category found')
+          return { success: false, message: 'Default category not found. Cannot move notes.' }
+        }
+
+        await api.delete(`/categories/${category._id}`, {
+          data: { option }
+        })
+
         setNotes(prev => prev.map(note =>
           note.categoryId._id === category._id
             ? { ...note, categoryId: { _id: generalCat._id, name: generalCat.name, color: generalCat.color } }
             : note
         ))
       } else {
+        await api.delete(`/categories/${category._id}`, {
+          data: { option }
+        })
+
         setNotes(prev => prev.filter(note => note.categoryId._id !== category._id))
       }
 
@@ -178,7 +197,9 @@ export function NotesProvider({ children }) {
       deleteNote,
       moveNotes,
       fetchCategories,
-      fetchNotes
+      fetchNotes,
+      logout,
+      refreshAuth: () => setToken(localStorage.getItem('token'))
     }}>
       {children}
     </NotesContext.Provider>
