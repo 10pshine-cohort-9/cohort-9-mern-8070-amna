@@ -21,8 +21,10 @@ export function NotesProvider({ children }) {
     try {
       const res = await api.get('/notes')
       setNotes(res.data)
+      return { success: true }
     } catch (error) {
       console.error('Error fetching notes:', error)
+      return { success: false }
     }
   }
 
@@ -88,13 +90,17 @@ export function NotesProvider({ children }) {
     try {
       const category = categories.find(cat => cat.name === categoryName)
       if (!category) return { success: false, message: 'Category not found' }
-
+    
       await api.post('/notes', {
         title,
         content,
         categoryId: category._id
       })
-      await fetchNotes()
+    
+      const refresh = await fetchNotes()
+      if (!refresh.success) {
+        return { success: false, message: 'Note created but failed to refresh' }
+      }
       return { success: true }
     } catch (error) {
       console.error('Error creating note:', error)
@@ -105,7 +111,6 @@ export function NotesProvider({ children }) {
   const editNote = async (id, title, content, newCategoryName) => {
     try {
       const updateData = { title, content }
-
       if (newCategoryName) {
         const category = categories.find(cat => cat.name === newCategoryName)
         if (!category) return { success: false, message: 'Category not found' }
@@ -113,22 +118,15 @@ export function NotesProvider({ children }) {
       }
 
       await api.put(`/notes/${id}`, updateData)
-      await fetchNotes()
+
+      const refresh = await fetchNotes()
+      if (!refresh.success) {
+        return { success: false, message: 'Note updated but failed to refresh' }
+      }
       return { success: true }
     } catch (error) {
       console.error('Error updating note:', error)
       return { success: false, message: 'Failed to update note' }
-    }
-  }
-
-  const deleteNote = async (id) => {
-    try {
-      await api.delete(`/notes/${id}`)
-      setNotes(prev => prev.filter(n => n._id !== id))
-      return { success: true }
-    } catch (error) {
-      console.error('Error deleting note:', error)
-      return { success: false, message: 'Failed to delete note' }
     }
   }
 
@@ -141,11 +139,26 @@ export function NotesProvider({ children }) {
         noteIds,
         targetCategoryId: targetCategory._id
       })
-      await fetchNotes()
+
+      const refresh = await fetchNotes()
+      if (!refresh.success) {
+        return { success: false, message: 'Notes moved but failed to refresh' }
+      }
       return { success: true }
     } catch (error) {
       console.error('Error moving notes:', error)
       return { success: false, message: 'Failed to move notes' }
+    }
+  }
+
+  const deleteNote = async (id) => {
+    try {
+      await api.delete(`/notes/${id}`)
+      setNotes(prev => prev.filter(n => n._id !== id))
+      return { success: true }
+    } catch (error) {
+      console.error('Error deleting note:', error)
+      return { success: false, message: 'Failed to delete note' }
     }
   }
 
