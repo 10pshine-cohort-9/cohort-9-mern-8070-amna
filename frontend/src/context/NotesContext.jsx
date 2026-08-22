@@ -7,6 +7,7 @@ export function NotesProvider({ children }) {
   const [categories, setCategories] = useState([])
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
+  const fetchNotesRef = { current: 0 }
 
   const fetchCategories = async () => {
     try {
@@ -18,9 +19,12 @@ export function NotesProvider({ children }) {
   }
 
   const fetchNotes = async () => {
+    const requestId = ++fetchNotesRef.current
     try {
       const res = await api.get('/notes')
-      setNotes(res.data)
+      if (requestId === fetchNotesRef.current) {
+        setNotes(res.data)
+      }
       return { success: true }
     } catch (error) {
       console.error('Error fetching notes:', error)
@@ -90,17 +94,17 @@ export function NotesProvider({ children }) {
     try {
       const category = categories.find(cat => cat.name === categoryName)
       if (!category) return { success: false, message: 'Category not found' }
-    
+
+      const clientRequestId = `${Date.now()}-${Math.random()}`
+
       await api.post('/notes', {
         title,
         content,
-        categoryId: category._id
+        categoryId: category._id,
+        clientRequestId
       })
-    
-      const refresh = await fetchNotes()
-      if (!refresh.success) {
-        return { success: false, message: 'Note created but failed to refresh' }
-      }
+
+      fetchNotes().catch(err => console.error('Refresh failed:', err))
       return { success: true }
     } catch (error) {
       console.error('Error creating note:', error)
