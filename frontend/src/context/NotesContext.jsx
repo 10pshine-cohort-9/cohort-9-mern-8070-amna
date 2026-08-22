@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useRef } from 'react'
 import api from '../api/axios'
 
 const NotesContext = createContext()
@@ -7,7 +7,7 @@ export function NotesProvider({ children }) {
   const [categories, setCategories] = useState([])
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
-  const fetchNotesRef = { current: 0 }
+  const fetchNotesRef = useRef(0)
 
   const fetchCategories = async () => {
     try {
