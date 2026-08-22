@@ -89,7 +89,7 @@ export function NotesProvider({ children }) {
         })
 
         setNotes(prev => prev.map(note =>
-          note.categoryId._id === category._id
+          note.categoryId?._id === category._id
             ? { ...note, categoryId: { _id: generalCat._id, name: generalCat.name, color: generalCat.color } }
             : note
         ))
@@ -98,7 +98,7 @@ export function NotesProvider({ children }) {
           data: { option }
         })
 
-        setNotes(prev => prev.filter(note => note.categoryId._id !== category._id))
+        setNotes(prev => prev.filter(note => note.categoryId?._id !== category._id))
       }
 
       setCategories(prev => prev.filter(cat => cat.name !== name))

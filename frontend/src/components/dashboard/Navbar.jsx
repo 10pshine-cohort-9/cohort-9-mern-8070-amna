@@ -7,8 +7,8 @@ function Navbar({ onSearch }) {
   const [searchQuery, setSearchQuery] = useState('')
 
   const handleLogout = () => {
-    localStorage.removeItem('isLoggedIn')
     localStorage.removeItem('token')
+    localStorage.removeItem('isLoggedIn')
     localStorage.removeItem('user')
     navigate('/login')
   }
