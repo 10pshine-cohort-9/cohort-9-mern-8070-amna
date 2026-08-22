@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useNotes } from '../../context/NotesContext'
 import './Navbar.css'
 
 function Navbar({ onSearch }) {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
+  const { logout } = useNotes()
 
   const handleLogout = () => {
-    localStorage.removeItem('token')
+    logout()
     localStorage.removeItem('isLoggedIn')
     localStorage.removeItem('user')
     navigate('/login')
