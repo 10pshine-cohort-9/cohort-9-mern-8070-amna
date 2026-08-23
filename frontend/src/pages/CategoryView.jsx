@@ -29,9 +29,11 @@ function CategoryView() {
   }
 
   const confirmDelete = async () => {
-    await deleteNote(noteToDelete._id)
-    setShowDeleteModal(false)
-    setNoteToDelete(null)
+    const res = await deleteNote(noteToDelete._id)
+    if (res.success) {
+      setShowDeleteModal(false)
+      setNoteToDelete(null)
+    }
   }
 
   const handleNoteCheck = (noteId) => {
@@ -44,10 +46,12 @@ function CategoryView() {
 
   const handleMoveConfirm = async () => {
     if (selectedNotes.length === 0) return
-    await moveNotes(selectedNotes, targetCategory)
-    setIsMoveMode(false)
-    setSelectedNotes([])
-    setTargetCategory('')
+    const res = await moveNotes(selectedNotes, targetCategory)
+    if (res.success) {
+      setIsMoveMode(false)
+      setSelectedNotes([])
+      setTargetCategory('')
+    }
   }
 
   const handleCategorySelect = (catName) => {

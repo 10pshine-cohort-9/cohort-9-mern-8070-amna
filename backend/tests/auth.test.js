@@ -11,12 +11,25 @@ const { expect } = chai
 const testEmail = `testuser_${Date.now()}@test.com`
 
 before(async () => {
-  await connectDB()
+  try {
+    await connectDB()
+  } catch (err) {
+    console.error('Error in auth.test.js before hook:', err)
+    throw err
+  }
 })
 
 after(async () => {
-  await User.deleteMany({ email: testEmail })
-  await Category.deleteMany({ name: 'General' })
+  try {
+    const user = await User.findOne({ email: testEmail })
+    if (user) {
+      await Category.deleteMany({ userId: user._id })
+      await User.deleteMany({ _id: user._id })
+    }
+  } catch (err) {
+    console.error('Error in auth.test.js after hook:', err)
+    throw err
+  }
 })
 
 describe('Auth API', () => {

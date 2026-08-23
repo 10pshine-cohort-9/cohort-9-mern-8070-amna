@@ -61,11 +61,19 @@ function NoteEditor() {
     try {
       setLoading(true)
       if (isEditMode && existingNote) {
-        await editNote(existingNote._id, title, editor.getHTML())
-        navigate(`/category/${existingNote.categoryId?.name}`)
+        const res = await editNote(existingNote._id, title, editor.getHTML())
+        if (res.success) {
+          navigate(`/category/${existingNote.categoryId?.name}`)
+        } else {
+          setError(res.message || 'Failed to save note. Try again.')
+        }
       } else {
-        await addNote(title, editor.getHTML(), selectedCategory)
-        navigate(`/category/${selectedCategory}`)
+        const res = await addNote(title, editor.getHTML(), selectedCategory)
+        if (res.success) {
+          navigate(`/category/${selectedCategory}`)
+        } else {
+          setError(res.message || 'Failed to save note. Try again.')
+        }
       }
     } catch (err) {
       setError('Failed to save note. Try again.')
@@ -140,13 +148,13 @@ function NoteEditor() {
                   className="btn-create-category"
                   onClick={async () => {
                     if (newCategoryName.trim() === '') return
-                    const success = await addCategory(newCategoryName.trim())
-                    if (success) {
+                    const res = await addCategory(newCategoryName.trim())
+                    if (res.success) {
                       setSelectedCategory(newCategoryName.trim())
                       setNewCategoryName('')
                       setShowNewCategory(false)
                     } else {
-                      setError('Category already exists.')
+                      setError(res.message || 'Category creation failed.')
                     }
                   }}
                 >

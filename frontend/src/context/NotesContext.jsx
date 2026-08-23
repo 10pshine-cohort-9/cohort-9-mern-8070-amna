@@ -41,7 +41,6 @@ export function NotesProvider({ children }) {
   useEffect(() => {
     if (token) {
       setLoading(true)
-      fetchNotesRef.current = 0
       Promise.all([fetchCategories(), fetchNotes()])
         .finally(() => setLoading(false))
     } else {
@@ -57,13 +56,13 @@ export function NotesProvider({ children }) {
       const color = colors[Math.floor(Math.random() * colors.length)]
       const res = await api.post('/categories', { name, color })
       setCategories(prev => [...prev, res.data])
-      return true
+      return { success: true, category: res.data }
     } catch (error) {
-      if (error.response?.status === 400) {
-        return false
-      }
+      const message = error.response?.status === 400
+        ? 'Category already exists'
+        : (error.response?.data?.message || 'Failed to create category')
       console.error('Error creating category:', error)
-      return false
+      return { success: false, message }
     }
   }
 

@@ -21,51 +21,61 @@ let targetCategoryId
 let noteId
 
 before(async () => {
-  await connectDB()
+  try {
+    await connectDB()
 
-  // Register main test user
-  const res1 = await chai.request(app)
-    .post('/api/auth/signup')
-    .send({
-      name: 'Note Test User',
-      email: testEmail,
-      password: '12345678'
-    })
-  token = res1.body.token
-  userId = res1.body.user.id
+    // Register main test user
+    const res1 = await chai.request(app)
+      .post('/api/auth/signup')
+      .send({
+        name: 'Note Test User',
+        email: testEmail,
+        password: '12345678'
+      })
+    token = res1.body.token
+    userId = res1.body.user.id
 
-  // Register secondary test user for authorization tests
-  const res2 = await chai.request(app)
-    .post('/api/auth/signup')
-    .send({
-      name: 'Other Note User',
-      email: otherUserEmail,
-      password: '12345678'
-    })
-  otherToken = res2.body.token
-  otherUserId = res2.body.user.id
+    // Register secondary test user for authorization tests
+    const res2 = await chai.request(app)
+      .post('/api/auth/signup')
+      .send({
+        name: 'Other Note User',
+        email: otherUserEmail,
+        password: '12345678'
+      })
+    otherToken = res2.body.token
+    otherUserId = res2.body.user.id
 
-  // Create a primary category for user 1
-  const catRes = await chai.request(app)
-    .post('/api/categories')
-    .set('Authorization', `Bearer ${token}`)
-    .send({ name: 'Work Notes', color: '#4A90E2' })
-  categoryId = catRes.body._id
+    // Create a primary category for user 1
+    const catRes = await chai.request(app)
+      .post('/api/categories')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Work Notes', color: '#4A90E2' })
+    categoryId = catRes.body._id
 
-  // Create a target category for testing move notes
-  const targetCatRes = await chai.request(app)
-    .post('/api/categories')
-    .set('Authorization', `Bearer ${token}`)
-    .send({ name: 'Archived Notes', color: '#50E3C2' })
-  targetCategoryId = targetCatRes.body._id
+    // Create a target category for testing move notes
+    const targetCatRes = await chai.request(app)
+      .post('/api/categories')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ name: 'Archived Notes', color: '#50E3C2' })
+    targetCategoryId = targetCatRes.body._id
+  } catch (err) {
+    console.error('Error in note.test.js before hook:', err)
+    throw err
+  }
 })
 
 after(async () => {
-  if (userId || otherUserId) {
-    await Note.deleteMany({ userId: { $in: [userId, otherUserId] } })
-    await Category.deleteMany({ userId: { $in: [userId, otherUserId] } })
+  try {
+    if (userId || otherUserId) {
+      await Note.deleteMany({ userId: { $in: [userId, otherUserId] } })
+      await Category.deleteMany({ userId: { $in: [userId, otherUserId] } })
+    }
+    await User.deleteMany({ email: { $in: [testEmail, otherUserEmail] } })
+  } catch (err) {
+    console.error('Error in note.test.js after hook:', err)
+    throw err
   }
-  await User.deleteMany({ email: { $in: [testEmail, otherUserEmail] } })
 })
 
 describe('Note API', () => {

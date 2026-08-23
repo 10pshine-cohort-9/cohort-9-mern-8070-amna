@@ -33,7 +33,9 @@ function NoteView() {
         setLoading(true)
         const result = await editNote(note._id, note.title, note.content, selectedCategory)
         if (result?.success) {
+          setShowCategoryModal(false)
           navigate(`/category/${encodeURIComponent(selectedCategory)}`)
+          return
         } else {
           console.error('Failed to change category:', result?.message)
         }
@@ -42,8 +44,9 @@ function NoteView() {
       } finally {
         setLoading(false)
       }
+    } else {
+      setShowCategoryModal(false)
     }
-    setShowCategoryModal(false)
   }
 
   return (

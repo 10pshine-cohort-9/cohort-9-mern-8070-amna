@@ -4,6 +4,7 @@ const app = require('../server')
 const connectDB = require('../src/config/db')
 const User = require('../src/models/User')
 const Category = require('../src/models/Category')
+const Note = require('../src/models/Notes')
 
 chai.use(chaiHttp)
 const { expect } = chai
@@ -13,22 +14,35 @@ let token
 let categoryId
 
 before(async () => {
-  await connectDB()
+  try {
+    await connectDB()
 
-  // Test user banao aur token lo
-  const res = await chai.request(app)
-    .post('/api/auth/signup')
-    .send({
-      name: 'Cat Test User',
-      email: testEmail,
-      password: '12345678'
-    })
-  token = res.body.token
+    const res = await chai.request(app)
+      .post('/api/auth/signup')
+      .send({
+        name: 'Cat Test User',
+        email: testEmail,
+        password: '12345678'
+      })
+    token = res.body.token
+  } catch (err) {
+    console.error('Error in category.test.js before hook:', err)
+    throw err
+  }
 })
 
 after(async () => {
-  await User.deleteMany({ email: testEmail })
-  await Category.deleteMany({ userId: (await User.findOne({ email: testEmail }))?._id })
+  try {
+    const user = await User.findOne({ email: testEmail })
+    if (user) {
+      await Note.deleteMany({ userId: user._id })
+      await Category.deleteMany({ userId: user._id })
+      await User.deleteMany({ _id: user._id })
+    }
+  } catch (err) {
+    console.error('Error in category.test.js after hook:', err)
+    throw err
+  }
 })
 
 describe('Category API', () => {
@@ -92,12 +106,24 @@ describe('Category API', () => {
     })
 
     it('should delete category and move notes to General', async () => {
+      const user = await User.findOne({ email: testEmail })
+      const note = await Note.create({
+        title: 'Category Move Test Note',
+        content: 'Testing note movement on category delete',
+        userId: user._id,
+        categoryId: categoryId
+      })
+
       const res = await chai.request(app)
         .delete(`/api/categories/${categoryId}`)
         .set('Authorization', `Bearer ${token}`)
         .send({ option: 'move' })
       expect(res).to.have.status(200)
       expect(res.body).to.have.property('message', 'Category deleted successfully')
+
+      const updatedNote = await Note.findById(note._id)
+      const generalCat = await Category.findOne({ name: 'General', userId: user._id })
+      expect(updatedNote.categoryId.toString()).to.equal(generalCat._id.toString())
     })
   })
 })
