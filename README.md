@@ -2,7 +2,7 @@
 Cohort 9 — MERN (NodeJS+ReactJS) assignment for Amna Saeed
 
 ## Project Overview
-A full-stack Notes App with user authentication, category management, and rich text note editing. Frontend and backend are both complete and connected.
+A full-stack Notes App with user authentication, category management, and rich text note editing. Frontend and backend are both complete, fully connected, and thoroughly covered by automated test suites.
 
 ## Tech Stack
 
@@ -13,6 +13,7 @@ A full-stack Notes App with user authentication, category management, and rich t
 - Context API
 - Axios
 - Plain CSS
+- Vitest & React Testing Library (Frontend Unit & Integration Tests)
 
 ### Backend
 - Node.js + Express.js
@@ -21,11 +22,7 @@ A full-stack Notes App with user authentication, category management, and rich t
 - Pino Logger
 - Bcrypt password hashing
 - CORS
-
-### Upcoming
-- Mocha/Chai backend tests
-- Jest frontend tests
-- SonarQube integration
+- Mocha, Chai & Chai-HTTP (Backend API Integration Tests)
 
 ## Security Note
 JWT token is currently stored in localStorage for development purposes.
@@ -73,6 +70,12 @@ In production, HttpOnly cookies should be used instead.
 - All API calls via Axios
 - Real-time UI updates after every operation
 
+### ✅ Frontend — Testing Suite (17 Tests)
+- Component & integration tests using Vitest + React Testing Library + JSDOM
+- `Login.test.jsx`: Form rendering, empty validation, error dynamic clearing, auth flow, and failure handling
+- `Signup.test.jsx`: Form rendering, empty validation, live password hint length check, registration flow, and error handling
+- `Dashboard.test.jsx`: Loading state, header & category rendering, navigation, modal category creation & duplicate validation, search filtering, and no-results view
+
 ### ✅ Backend — Auth APIs
 - POST /api/auth/signup — register user + auto-create General category
 - POST /api/auth/login — login with JWT token
@@ -99,10 +102,11 @@ In production, HttpOnly cookies should be used instead.
 - Pino HTTP request logging
 - CORS configured
 
-### 🔄 In Progress
-- Mocha/Chai backend tests
-- Jest frontend tests
-- SonarQube integration
+### ✅ Backend — Testing Suite (38 Tests)
+- Integration test suites using Mocha + Chai + Chai-HTTP
+- `auth.test.js`: Signup, input validations, password requirements, duplicate email rejection, login, and incorrect password handling
+- `category.test.js`: Category creation, duplicate checks, auth protection, fetching categories, and General category delete protection
+- `note.test.js`: Note creation, field validations, fetching user notes, category filtering, title search, updating notes, bulk note moving, cross-user authorization checks (403), and note deletion
 
 ## Folder Structure
 
@@ -136,6 +140,11 @@ cohort-9-mern-8070-amna/
         CategoryView.css
         NoteView.jsx
         NoteView.css
+      tests/
+        setup.js
+        Login.test.jsx
+        Signup.test.jsx
+        Dashboard.test.jsx
       index.css
       App.jsx
       main.jsx
@@ -158,6 +167,10 @@ cohort-9-mern-8070-amna/
         authRoutes.js
         categoryRoutes.js
         noteRoutes.js
+    tests/
+      auth.test.js
+      category.test.js
+      note.test.js
     server.js
     .env.example
 ```
@@ -172,13 +185,25 @@ npm install
 npm run dev
 ```
 
-> Note: MongoDB Atlas or replica set required. Standalone MongoDB does not support transactions.
+#### Run Backend Tests
+```bash
+cd backend
+npm test
+```
+
+> Note: MongoDB Atlas or replica set required for running API & tests (transactions support).
 
 ### Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
+```
+
+#### Run Frontend Tests
+```bash
+cd frontend
+npm test
 ```
 
 ## Environment Variables
