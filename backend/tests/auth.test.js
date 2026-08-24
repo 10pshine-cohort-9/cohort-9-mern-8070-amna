@@ -15,10 +15,14 @@ before(async () => {
 })
 
 after(async () => {
-  const user = await User.findOne({ email: testEmail })
-  if (user) {
-    await Category.deleteMany({ userId: user._id })
-    await User.deleteMany({ _id: user._id })
+  try {
+    const user = await User.findOne({ email: testEmail })
+    if (user) {
+      await Category.deleteMany({ userId: user._id })
+      await User.deleteMany({ _id: user._id })
+    }
+  } catch (err) {
+    console.error('Teardown error in auth.test.js:', err)
   }
 })
 

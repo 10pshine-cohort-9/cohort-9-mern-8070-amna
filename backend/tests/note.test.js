@@ -57,11 +57,15 @@ before(async () => {
 })
 
 after(async () => {
-  if (userId || otherUserId) {
-    await Note.deleteMany({ userId: { $in: [userId, otherUserId] } })
-    await Category.deleteMany({ userId: { $in: [userId, otherUserId] } })
+  try {
+    if (userId || otherUserId) {
+      await Note.deleteMany({ userId: { $in: [userId, otherUserId] } })
+      await Category.deleteMany({ userId: { $in: [userId, otherUserId] } })
+    }
+    await User.deleteMany({ email: { $in: [testEmail, otherUserEmail] } })
+  } catch (err) {
+    console.error('Teardown error in note.test.js:', err)
   }
-  await User.deleteMany({ email: { $in: [testEmail, otherUserEmail] } })
 })
 
 describe('Note API', () => {

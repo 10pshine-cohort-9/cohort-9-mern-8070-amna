@@ -115,11 +115,9 @@ describe('Dashboard Component', () => {
 
     fireEvent.click(screen.getByText('+ New Category'))
 
-    // Empty name submit
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
     expect(screen.getByText('Category name cannot be empty.')).toBeInTheDocument()
 
-    // Duplicate name submit
     const input = screen.getByPlaceholderText('Category name')
     fireEvent.change(input, { target: { value: 'General' } })
     fireEvent.click(screen.getByRole('button', { name: 'Create' }))
