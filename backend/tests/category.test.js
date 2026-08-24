@@ -14,39 +14,28 @@ let token
 let categoryId
 
 before(async () => {
-  try {
-    await connectDB()
+  await connectDB()
 
-    const res = await chai.request(app)
-      .post('/api/auth/signup')
-      .send({
-        name: 'Cat Test User',
-        email: testEmail,
-        password: '12345678'
-      })
-    token = res.body.token
-  } catch (err) {
-    console.error('Error in category.test.js before hook:', err)
-    throw err
-  }
+  const res = await chai.request(app)
+    .post('/api/auth/signup')
+    .send({
+      name: 'Cat Test User',
+      email: testEmail,
+      password: '12345678'
+    })
+  token = res.body.token
 })
 
 after(async () => {
-  try {
-    const user = await User.findOne({ email: testEmail })
-    if (user) {
-      await Note.deleteMany({ userId: user._id })
-      await Category.deleteMany({ userId: user._id })
-      await User.deleteMany({ _id: user._id })
-    }
-  } catch (err) {
-    console.error('Error in category.test.js after hook:', err)
-    throw err
+  const user = await User.findOne({ email: testEmail })
+  if (user) {
+    await Note.deleteMany({ userId: user._id })
+    await Category.deleteMany({ userId: user._id })
+    await User.deleteMany({ _id: user._id })
   }
 })
 
 describe('Category API', () => {
-
   describe('POST /api/categories', () => {
     it('should create a new category', async () => {
       const res = await chai.request(app)

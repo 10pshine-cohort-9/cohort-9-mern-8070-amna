@@ -11,29 +11,18 @@ const { expect } = chai
 const testEmail = `testuser_${Date.now()}@test.com`
 
 before(async () => {
-  try {
-    await connectDB()
-  } catch (err) {
-    console.error('Error in auth.test.js before hook:', err)
-    throw err
-  }
+  await connectDB()
 })
 
 after(async () => {
-  try {
-    const user = await User.findOne({ email: testEmail })
-    if (user) {
-      await Category.deleteMany({ userId: user._id })
-      await User.deleteMany({ _id: user._id })
-    }
-  } catch (err) {
-    console.error('Error in auth.test.js after hook:', err)
-    throw err
+  const user = await User.findOne({ email: testEmail })
+  if (user) {
+    await Category.deleteMany({ userId: user._id })
+    await User.deleteMany({ _id: user._id })
   }
 })
 
 describe('Auth API', () => {
-
   describe('POST /api/auth/signup', () => {
     it('should signup a new user', async () => {
       const res = await chai.request(app)
@@ -51,9 +40,7 @@ describe('Auth API', () => {
     it('should not signup with missing fields', async () => {
       const res = await chai.request(app)
         .post('/api/auth/signup')
-        .send({
-          email: testEmail
-        })
+        .send({ email: testEmail })
       expect(res).to.have.status(400)
       expect(res.body).to.have.property('message', 'All fields are required')
     })
@@ -109,9 +96,7 @@ describe('Auth API', () => {
     it('should not login with missing fields', async () => {
       const res = await chai.request(app)
         .post('/api/auth/login')
-        .send({
-          email: testEmail
-        })
+        .send({ email: testEmail })
       expect(res).to.have.status(400)
       expect(res.body).to.have.property('message', 'All fields are required')
     })
