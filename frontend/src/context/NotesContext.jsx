@@ -1,139 +1,205 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect, useRef } from 'react'
+import api from '../api/axios'
 
 const NotesContext = createContext()
 
-const initialCategories = [
-  { id: 1, name: 'General', description: 'All your general notes', noteCount: 0, isDefault: true, color: '#187171' },
-  { id: 2, name: 'University', description: 'My academic journey', noteCount: 8, isDefault: false, color: '#7B5EA7' },
-  { id: 3, name: 'Development', description: 'Coding and projects', noteCount: 15, isDefault: false, color: '#2E86AB' },
-]
-
-const colors = ['#7B5EA7', '#2E86AB', '#C17D3C', '#E05C8A', '#3DAA6E', '#E07B39']
-
 export function NotesProvider({ children }) {
-  const [categories, setCategories] = useState(initialCategories)
+  const [categories, setCategories] = useState([])
   const [notes, setNotes] = useState([])
+  const [loading, setLoading] = useState(true)
+  const fetchNotesRef = useRef(0)
+  const [token, setToken] = useState(localStorage.getItem('token'))
 
-  const addCategory = (name) => {
-    const duplicate = categories.some(
-      cat => cat.name.toLowerCase() === name.toLowerCase()
-    )
-    if (duplicate) return false
-
-    const newCategory = {
-      id: Date.now(),
-      name,
-      description: 'My new category',
-      noteCount: 0,
-      isDefault: false,
-      color: colors[Math.floor(Math.random() * colors.length)]
-    }
-    setCategories(prev => [...prev, newCategory])
-    return true
+  const logout = () => {
+    localStorage.removeItem('token')
+    setToken(null)
   }
 
-  const deleteCategory = (name, option) => {
-    const deletedCat = categories.find(cat => cat.name === name)
-    if (option === 'move') {
-      setNotes(prev => prev.map(note =>
-        note.categoryName === name
-          ? { ...note, categoryName: 'General' }
-          : note
-      ))
-      setCategories(prev => prev.map(cat =>
-        cat.isDefault
-          ? { ...cat, noteCount: cat.noteCount + deletedCat.noteCount }
-          : cat
-      ).filter(cat => cat.name !== name))
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get('/categories')
+      setCategories(res.data)
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }
+
+  const fetchNotes = async () => {
+    const requestId = ++fetchNotesRef.current
+    try {
+      const res = await api.get('/notes')
+      if (requestId === fetchNotesRef.current) {
+        setNotes(res.data)
+      }
+      return { success: true }
+    } catch (error) {
+      console.error('Error fetching notes:', error)
+      return { success: false }
+    }
+  }
+
+  useEffect(() => {
+    if (token) {
+      setLoading(true)
+      fetchNotesRef.current = 0
+      Promise.all([fetchCategories(), fetchNotes()])
+        .finally(() => setLoading(false))
     } else {
-      setNotes(prev => prev.filter(note => note.categoryName !== name))
+      setNotes([])
+      setCategories([])
+      setLoading(false)
+    }
+  }, [token])
+
+  const addCategory = async (name) => {
+    try {
+      const colors = ['#7B5EA7', '#2E86AB', '#C17D3C', '#E05C8A', '#3DAA6E', '#E07B39']
+      const color = colors[Math.floor(Math.random() * colors.length)]
+      const res = await api.post('/categories', { name, color })
+      setCategories(prev => [...prev, res.data])
+      return true
+    } catch (error) {
+      if (error.response?.status === 400) {
+        return false
+      }
+      console.error('Error creating category:', error)
+      return false
+    }
+  }
+
+  const deleteCategory = async (name, option) => {
+    try {
+      const category = categories.find(cat => cat.name === name)
+
+      if (!category) {
+        console.error('Category not found:', name)
+        return { success: false, message: 'Category not found' }
+      }
+
+      if (option === 'move') {
+        const generalCat = categories.find(cat => cat.isDefault)
+
+        if (!generalCat) {
+          console.error('No default category found')
+          return { success: false, message: 'Default category not found. Cannot move notes.' }
+        }
+
+        await api.delete(`/categories/${category._id}`, {
+          data: { option }
+        })
+
+        setNotes(prev => prev.map(note =>
+          note.categoryId?._id === category._id
+            ? { ...note, categoryId: { _id: generalCat._id, name: generalCat.name, color: generalCat.color } }
+            : note
+        ))
+      } else {
+        await api.delete(`/categories/${category._id}`, {
+          data: { option }
+        })
+
+        setNotes(prev => prev.filter(note => note.categoryId?._id !== category._id))
+      }
+
       setCategories(prev => prev.filter(cat => cat.name !== name))
+      return { success: true }
+    } catch (error) {
+      console.error('Error deleting category:', error)
+      return { success: false, message: 'Failed to delete category' }
     }
   }
 
-  const addNote = (title, content, categoryName) => {
-    const now = new Date().toLocaleDateString()
-    const newNote = {
-      id: Date.now(),
-      title,
-      content,
-      categoryName: categoryName || 'General',
-      createdAt: now
-    }
-    setNotes(prev => [...prev, newNote])
-    setCategories(prev => prev.map(cat =>
-      cat.name === (categoryName || 'General')
-        ? { ...cat, noteCount: cat.noteCount + 1 }
-        : cat
-    ))
-  }
+  const addNote = async (title, content, categoryName) => {
+    try {
+      const category = categories.find(cat => cat.name === categoryName)
+      if (!category) return { success: false, message: 'Category not found' }
 
-  const deleteNote = (id) => {
-    const note = notes.find(n => n.id === id)
-    setNotes(prev => prev.filter(n => n.id !== id))
-    setCategories(prev => prev.map(cat =>
-      cat.name === note.categoryName
-        ? { ...cat, noteCount: cat.noteCount - 1 }
-        : cat
-    ))
-  }
+      const clientRequestId = `${Date.now()}-${Math.random()}`
 
-  const editNote = (id, title, content, newCategoryName) => {
-    const oldNote = notes.find(n => n.id === id)
-    const updatedAt = new Date().toLocaleDateString()
+      await api.post('/notes', {
+        title,
+        content,
+        categoryId: category._id,
+        clientRequestId
+      })
 
-    if (newCategoryName && newCategoryName !== oldNote.categoryName) {
-      setCategories(prev => prev.map(cat => {
-        if (cat.name === oldNote.categoryName) {
-          return { ...cat, noteCount: cat.noteCount - 1 }
-        }
-        if (cat.name === newCategoryName) {
-          return { ...cat, noteCount: cat.noteCount + 1 }
-        }
-        return cat
-      }))
-      setNotes(prev => prev.map(n =>
-        n.id === id
-          ? { ...n, title, content, categoryName: newCategoryName, updatedAt }
-          : n
-      ))
-    } else {
-      setNotes(prev => prev.map(n =>
-        n.id === id ? { ...n, title, content, updatedAt } : n
-      ))
+      fetchNotes().catch(err => console.error('Refresh failed:', err))
+      return { success: true }
+    } catch (error) {
+      console.error('Error creating note:', error)
+      return { success: false, message: 'Failed to create note' }
     }
   }
 
-  const moveNotes = (noteIds, targetCategory) => {
-    const movingNotes = notes.filter(n => noteIds.includes(n.id))
-  
-    setNotes(prev => prev.map(n =>
-      noteIds.includes(n.id)
-        ? { ...n, categoryName: targetCategory }
-        : n
-    ))
-  
-    setCategories(prev => prev.map(cat => {
-      if (cat.name === 'General') {
-        return { ...cat, noteCount: cat.noteCount - movingNotes.length }
+  const editNote = async (id, title, content, newCategoryName) => {
+    try {
+      const updateData = { title, content }
+      if (newCategoryName) {
+        const category = categories.find(cat => cat.name === newCategoryName)
+        if (!category) return { success: false, message: 'Category not found' }
+        updateData.categoryId = category._id
       }
-      if (cat.name === targetCategory) {
-        return { ...cat, noteCount: cat.noteCount + movingNotes.length }
+
+      await api.put(`/notes/${id}`, updateData)
+
+      const refresh = await fetchNotes()
+      if (!refresh.success) {
+        return { success: false, message: 'Note updated but failed to refresh' }
       }
-      return cat
-    }))
+      return { success: true }
+    } catch (error) {
+      console.error('Error updating note:', error)
+      return { success: false, message: 'Failed to update note' }
+    }
+  }
+
+  const moveNotes = async (noteIds, targetCategoryName) => {
+    try {
+      const targetCategory = categories.find(cat => cat.name === targetCategoryName)
+      if (!targetCategory) return { success: false, message: 'Category not found' }
+
+      await api.put('/notes/move', {
+        noteIds,
+        targetCategoryId: targetCategory._id
+      })
+
+      const refresh = await fetchNotes()
+      if (!refresh.success) {
+        return { success: false, message: 'Notes moved but failed to refresh' }
+      }
+      return { success: true }
+    } catch (error) {
+      console.error('Error moving notes:', error)
+      return { success: false, message: 'Failed to move notes' }
+    }
+  }
+
+  const deleteNote = async (id) => {
+    try {
+      await api.delete(`/notes/${id}`)
+      setNotes(prev => prev.filter(n => n._id !== id))
+      return { success: true }
+    } catch (error) {
+      console.error('Error deleting note:', error)
+      return { success: false, message: 'Failed to delete note' }
+    }
   }
 
   return (
     <NotesContext.Provider value={{
       categories,
       notes,
+      loading,
       addCategory,
       deleteCategory,
       addNote,
-      deleteNote,
       editNote,
-      moveNotes
+      deleteNote,
+      moveNotes,
+      fetchCategories,
+      fetchNotes,
+      logout,
+      refreshAuth: () => setToken(localStorage.getItem('token'))
     }}>
       {children}
     </NotesContext.Provider>
