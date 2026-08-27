@@ -1,25 +1,31 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import PropTypes from 'prop-types'
 import './NewCategoryModal.css'
 
 function NewCategoryModal({ onClose, onAdd, existingCategories }) {
   const [name, setName] = useState('')
   const [error, setError] = useState('')
+  const dialogRef = useRef(null)
+
+  useEffect(() => {
+    dialogRef.current?.showModal()
+  }, [])
 
   const handleAdd = async () => {
     if (name.trim() === '') {
       setError('Category name cannot be empty.')
       return
     }
-  
+
     const duplicate = existingCategories.some(
       cat => cat.name.toLowerCase() === name.trim().toLowerCase()
     )
-  
+
     if (duplicate) {
       setError('Category with this name already exists.')
       return
     }
-  
+
     try {
       const success = await onAdd(name.trim())
       if (success) {
@@ -33,7 +39,12 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
   }
 
   return (
-    <dialog className="new-category-overlay" aria-labelledby="new-category-title" open>
+    <dialog
+      ref={dialogRef}
+      className="new-category-overlay"
+      aria-labelledby="new-category-title"
+      onCancel={onClose}
+    >
       <div className="new-category-modal">
         <h3 id="new-category-title">New Category</h3>
         <label htmlFor="category-name">Category Name</label>
@@ -55,6 +66,16 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
       </div>
     </dialog>
   )
+}
+
+NewCategoryModal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  onAdd: PropTypes.func.isRequired,
+  existingCategories: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired
+    })
+  ).isRequired
 }
 
 export default NewCategoryModal
