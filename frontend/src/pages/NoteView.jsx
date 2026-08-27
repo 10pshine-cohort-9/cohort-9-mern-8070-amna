@@ -10,6 +10,7 @@ function NoteView() {
   const [showCategoryModal, setShowCategoryModal] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('')
   const [loading, setLoading] = useState(false)
+  const [modalError, setModalError] = useState('')
 
   const note = notes.find(n => n._id === noteId)
   const category = note ? categories.find(cat => cat._id === note.categoryId?._id) : null
@@ -19,7 +20,7 @@ function NoteView() {
       <div className="note-view-page">
         <div className="note-not-found">
           <h2>Note not found</h2>
-          <button className="btn-back" onClick={() => navigate('/dashboard')}>
+          <button type="button" className="btn-back" onClick={() => navigate('/dashboard')}>
             ← Back to Dashboard
           </button>
         </div>
@@ -28,22 +29,23 @@ function NoteView() {
   }
 
   const handleChangeCategory = async () => {
-    if (selectedCategory && selectedCategory !== note.categoryId?.name) {
-      try {
-        setLoading(true)
-        const result = await editNote(note._id, note.title, note.content, selectedCategory)
-        if (result?.success) {
-          navigate(`/category/${encodeURIComponent(selectedCategory)}`)
-        } else {
-          console.error('Failed to change category:', result?.message)
-        }
-      } catch (err) {
-        console.error('Error changing category:', err)
-      } finally {
-        setLoading(false)
-      }
+    if (!selectedCategory || selectedCategory === note.categoryId?.name) {
+      setShowCategoryModal(false)
+      return
     }
-    setShowCategoryModal(false)
+
+    setLoading(true)
+    setModalError('')
+    try {
+      const result = await editNote(note._id, note.title, note.content, selectedCategory)
+      if (result?.success) {
+        navigate(`/category/${encodeURIComponent(selectedCategory)}`)
+      } else {
+        setModalError(result?.message || 'Failed to change category. Try again.')
+      }
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -51,20 +53,23 @@ function NoteView() {
       <div className="note-view-container">
 
         <div className="note-view-header">
-          <button className="btn-back" onClick={() => navigate(-1)}>
+          <button type="button" className="btn-back" onClick={() => navigate(-1)}>
             ← Back
           </button>
           <div className="note-view-actions">
             <button
+              type="button"
               className="btn-change-category"
               onClick={() => {
                 setSelectedCategory(note.categoryId?.name || '')
+                setModalError('')
                 setShowCategoryModal(true)
               }}
             >
               📁 Change Category
             </button>
             <button
+              type="button"
               className="btn-edit"
               onClick={() => navigate(`/notes/edit/${note._id}`)}
             >
@@ -101,9 +106,9 @@ function NoteView() {
       </div>
 
       {showCategoryModal && (
-        <div className="modal-overlay" role="dialog" aria-modal="true">
+        <dialog className="modal-overlay" aria-labelledby="change-category-title" open>
           <div className="modal">
-            <h3>Change Category</h3>
+            <h3 id="change-category-title">Change Category</h3>
             <p>Move "<strong>{note.title}</strong>" to:</p>
             <select
               className="category-select-modal"
@@ -116,14 +121,20 @@ function NoteView() {
                 </option>
               ))}
             </select>
+            {modalError && <p className="error-msg">{modalError}</p>}
             <div className="modal-buttons">
               <button
+                type="button"
                 className="modal-cancel"
-                onClick={() => setShowCategoryModal(false)}
+                onClick={() => {
+                  setShowCategoryModal(false)
+                  setModalError('')
+                }}
               >
                 Cancel
               </button>
               <button
+                type="button"
                 className="modal-confirm-teal"
                 onClick={handleChangeCategory}
                 disabled={loading}
@@ -132,7 +143,7 @@ function NoteView() {
               </button>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </div>
   )

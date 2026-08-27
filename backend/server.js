@@ -12,6 +12,7 @@ const { errorHandler, notFound } = require('./src/middleware/errorMiddleware')
 dotenv.config()
 
 const app = express()
+app.disable('x-powered-by')
 const logger = pino({level: "info"})
 
 app.use(cors({

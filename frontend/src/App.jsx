@@ -7,12 +7,12 @@ import CategoryView from './pages/CategoryView'
 import NoteView from './pages/NoteView'
 
 
-function App() {
-  function ProtectedRoute({ children }) {
-    const isLoggedIn = localStorage.getItem('isLoggedIn')
-    return isLoggedIn === 'true' ? children : <Navigate to="/login" />
-  }
+function ProtectedRoute({ children }) {
+  const isLoggedIn = localStorage.getItem('isLoggedIn')
+  return isLoggedIn === 'true' ? children : <Navigate to="/login" />
+}
 
+function App() {
   return (
     <BrowserRouter>
       <Routes>

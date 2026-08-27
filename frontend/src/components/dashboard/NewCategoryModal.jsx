@@ -5,7 +5,7 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
   const [name, setName] = useState('')
   const [error, setError] = useState('')
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (name.trim() === '') {
       setError('Category name cannot be empty.')
       return
@@ -20,12 +20,16 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
       return
     }
 
-    onAdd(name.trim())
-    onClose()
+    const success = await onAdd(name.trim())
+    if (success) {
+      onClose()
+    } else {
+      setError('Failed to create category. Try again.')
+    }
   }
 
   return (
-    <div className="new-category-overlay" role="dialog" aria-modal="true" aria-labelledby="new-category-title">
+    <dialog className="new-category-overlay" aria-labelledby="new-category-title" open>
       <div className="new-category-modal">
         <h3 id="new-category-title">New Category</h3>
         <label htmlFor="category-name">Category Name</label>
@@ -41,11 +45,11 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
         />
         {error && <p className="error-msg">{error}</p>}
         <div className="new-category-buttons">
-          <button className="modal-cancel" onClick={onClose}>Cancel</button>
-          <button className="modal-confirm-teal" onClick={handleAdd}>Create</button>
+          <button type="button" className="modal-cancel" onClick={onClose}>Cancel</button>
+          <button type="button" className="modal-confirm-teal" onClick={handleAdd}>Create</button>
         </div>
       </div>
-    </div>
+    </dialog>
   )
 }
 

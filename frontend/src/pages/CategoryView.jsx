@@ -61,7 +61,7 @@ function CategoryView() {
       <div className="category-view-page">
         <div className="category-not-found">
           <h2>Category not found</h2>
-          <button className="btn-back" onClick={() => navigate('/dashboard')}>
+          <button type="button" className="btn-back" onClick={() => navigate('/dashboard')}>
             ← Back to Dashboard
           </button>
         </div>
@@ -74,7 +74,7 @@ function CategoryView() {
       <div className="category-view-container">
 
         <div className="category-view-header">
-          <button className="btn-back" onClick={() => navigate('/dashboard')}>
+          <button type="button" className="btn-back" onClick={() => navigate('/dashboard')}>
             ← Back
           </button>
           <div className="category-view-title">
@@ -82,6 +82,7 @@ function CategoryView() {
             <span className="category-note-count">{categoryNotes.length} notes</span>
           </div>
           <button
+            type="button"
             className="btn-new-note"
             onClick={() => navigate(`/notes/new/${categoryName}`)}
           >
@@ -91,6 +92,7 @@ function CategoryView() {
 
         {category.isDefault && categoryNotes.length > 0 && !isMoveMode && (
           <button
+            type="button"
             className="btn-move-category"
             onClick={() => setShowCategoryPicker(true)}
           >
@@ -105,8 +107,7 @@ function CategoryView() {
               ? (
                 <div className="no-categories">
                   <p>No categories available.</p>
-                  <p>Create a category first from the dashboard.</p>
-                  <button className="btn-back" onClick={() => setShowCategoryPicker(false)}>
+                  <button type="button" className="btn-back" onClick={() => setShowCategoryPicker(false)}>
                     Cancel
                   </button>
                 </div>
@@ -115,6 +116,7 @@ function CategoryView() {
                 <div className="category-picker-list">
                   {userCategories.map(cat => (
                     <button
+                      type="button"
                       key={cat._id}
                       className="category-picker-item"
                       style={{ borderColor: cat.color, color: cat.color }}
@@ -123,7 +125,7 @@ function CategoryView() {
                       📁 {cat.name}
                     </button>
                   ))}
-                  <button className="btn-cancel-move" onClick={() => setShowCategoryPicker(false)}>
+                  <button type="button" className="btn-cancel-move" onClick={() => setShowCategoryPicker(false)}>
                     Cancel
                   </button>
                 </div>
@@ -138,6 +140,7 @@ function CategoryView() {
             <p className="move-mode-hint">Select notes to move</p>
             <div className="move-mode-actions">
               <button
+                type="button"
                 className="btn-cancel-move"
                 onClick={() => {
                   setIsMoveMode(false)
@@ -148,6 +151,7 @@ function CategoryView() {
                 Cancel
               </button>
               <button
+                type="button"
                 className="btn-move-confirm"
                 onClick={handleMoveConfirm}
                 disabled={selectedNotes.length === 0}
@@ -168,6 +172,7 @@ function CategoryView() {
           />
           {searchQuery && (
             <button
+              type="button"
               className="category-search-clear"
               onClick={() => setSearchQuery('')}
               aria-label="Clear search"
@@ -178,7 +183,7 @@ function CategoryView() {
         {filteredNotes.length === 0 && searchQuery && (
           <div className="no-results">
             <p>No notes found for "<strong>{searchQuery}</strong>"</p>
-            <button className="btn-clear-search" onClick={() => setSearchQuery('')}>
+            <button type="button" className="btn-clear-search" onClick={() => setSearchQuery('')}>
               ← Back to all notes
             </button>
           </div>
@@ -188,6 +193,7 @@ function CategoryView() {
           <div className="no-notes">
             <p>No notes in this category yet.</p>
             <button
+              type="button"
               className="btn-new-note"
               onClick={() => navigate(`/notes/new/${categoryName}`)}
             >
@@ -208,6 +214,7 @@ function CategoryView() {
                 />
               )}
               <button
+                type="button"
                 className={`note-card ${isMoveMode ? 'note-card--selectable' : ''} ${selectedNotes.includes(note._id) ? 'note-card--selected' : ''}`}
                 onClick={() => {
                   if (isMoveMode) {
@@ -230,12 +237,14 @@ function CategoryView() {
               {!isMoveMode && (
                 <div className="note-card-actions">
                   <button
+                    type="button"
                     className="btn-edit"
                     onClick={() => navigate(`/notes/edit/${note._id}`)}
                   >
                     Edit
                   </button>
                   <button
+                    type="button"
                     className="btn-delete"
                     onClick={() => handleDeleteNote(note)}
                   >
@@ -250,20 +259,20 @@ function CategoryView() {
       </div>
 
       {showDeleteModal && (
-        <div className="modal-overlay" role="dialog" aria-modal="true">
+        <dialog className="modal-overlay" aria-labelledby="delete-note-title" open>
           <div className="modal">
-            <h3>Delete "{noteToDelete?.title}"?</h3>
+            <h3 id="delete-note-title">Delete "{noteToDelete?.title}"?</h3>
             <p>This note will be permanently deleted.</p>
             <div className="modal-buttons">
-              <button className="modal-cancel" onClick={() => setShowDeleteModal(false)}>
+              <button type="button" className="modal-cancel" onClick={() => setShowDeleteModal(false)}>
                 Cancel
               </button>
-              <button className="modal-confirm" onClick={confirmDelete}>
+              <button type="button" className="modal-confirm" onClick={confirmDelete}>
                 Delete Note
               </button>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </div>
   )

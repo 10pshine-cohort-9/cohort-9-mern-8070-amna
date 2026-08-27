@@ -3,7 +3,7 @@ const Category = require('../models/Category')
 const pino = require('pino')
 
 const logger = pino({ level: 'info' })
-const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`)
 
 const getNotes = async (req, res) => {
   try {
