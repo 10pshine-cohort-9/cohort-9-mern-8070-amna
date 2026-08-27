@@ -10,20 +10,24 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
       setError('Category name cannot be empty.')
       return
     }
-
+  
     const duplicate = existingCategories.some(
       cat => cat.name.toLowerCase() === name.trim().toLowerCase()
     )
-
+  
     if (duplicate) {
       setError('Category with this name already exists.')
       return
     }
-
-    const success = await onAdd(name.trim())
-    if (success) {
-      onClose()
-    } else {
+  
+    try {
+      const success = await onAdd(name.trim())
+      if (success) {
+        onClose()
+      } else {
+        setError('Failed to create category. Try again.')
+      }
+    } catch {
       setError('Failed to create category. Try again.')
     }
   }

@@ -149,7 +149,7 @@ describe('NoteEditor', () => {
     })
   })
 
-  it('should call addNote on save with title', async () => {
+  it('should show content empty error when title filled but content empty', async () => {
       mockAddNote.mockResolvedValue({ success: true })
       renderEditor()
       fireEvent.change(screen.getByPlaceholderText('Note Title...'), { target: { value: 'Test Note' } })
@@ -159,7 +159,7 @@ describe('NoteEditor', () => {
       })
     })
 
-    it('should show error when addNote fails', async () => {
+    it('should show content empty error even when addNote mock set', async () => {
           mockAddNote.mockResolvedValue({ success: false, message: 'Failed to create note' })
           renderEditor()
           fireEvent.change(screen.getByPlaceholderText('Note Title...'), { target: { value: 'Test Note' } })

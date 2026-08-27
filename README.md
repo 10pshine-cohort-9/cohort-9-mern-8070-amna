@@ -221,6 +221,14 @@ cd backend
 npm test
 ```
 
+### Run Tests Before SonarQube Scan
+```bash
+cd frontend && npm run test -- --coverage
+cd ../backend && npm test
+cd ..
+sonar-scanner
+```
+
 #### Frontend Coverage
 ```bash
 cd frontend
