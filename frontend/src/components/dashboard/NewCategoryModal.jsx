@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import PropTypes from 'prop-types'
 import './NewCategoryModal.css'
 
 function NewCategoryModal({ onClose, onAdd, existingCategories }) {
@@ -8,7 +7,11 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
   const dialogRef = useRef(null)
 
   useEffect(() => {
-    dialogRef.current?.showModal()
+    const dialog = dialogRef.current
+    dialog?.showModal()
+    return () => {
+      if (dialog?.open) dialog.close()
+    }
   }, [])
 
   const handleAdd = async () => {
@@ -66,16 +69,6 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
       </div>
     </dialog>
   )
-}
-
-NewCategoryModal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  onAdd: PropTypes.func.isRequired,
-  existingCategories: PropTypes.arrayOf(
-    PropTypes.shape({
-      name: PropTypes.string.isRequired
-    })
-  ).isRequired
 }
 
 export default NewCategoryModal
