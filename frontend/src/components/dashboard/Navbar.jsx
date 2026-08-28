@@ -47,7 +47,7 @@ function Navbar({ onSearch }) {
           </button>
 
           {searchQuery && (
-            <button aria-label="Clear search" className="search-clear" onClick={() => {
+            <button type="button" aria-label="Clear search" className="search-clear" onClick={() => {
               setSearchQuery('')
               onSearch('')
             }}>✕</button>
@@ -58,7 +58,7 @@ function Navbar({ onSearch }) {
       <div className="navbar-right">
         <div className="navbar-avatar">A</div>
         <span className="navbar-username">Amna</span>
-        <button className="navbar-logout" onClick={handleLogout}>
+        <button type="button" className="navbar-logout" onClick={handleLogout}>
           ⇥ Logout
         </button>
       </div>

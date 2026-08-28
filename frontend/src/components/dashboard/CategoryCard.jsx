@@ -15,13 +15,14 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
 
   return (
     <>
-      <div
+      <button
+        type="button" // ✅ ADDED
         className={`category-card ${isDefault ? 'category-card--default' : ''}`}
         onClick={() => navigate(`/category/${encodeURIComponent(name)}`)}
-        tabIndex={0}
-        role="button"
         onKeyDown={(e) => {
+          if (e.target !== e.currentTarget) return
           if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
             navigate(`/category/${encodeURIComponent(name)}`)
           }
         }}
@@ -35,6 +36,7 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
             : (
               <div className="category-menu-wrapper">
                 <button
+                  type="button" // ✅ Already has, keep it
                   className="category-menu"
                   onClick={(e) => {
                     e.stopPropagation()
@@ -42,10 +44,13 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
                   }}
                   aria-expanded={menuOpen}
                   aria-label="Category options"
-                >⋮</button>
+                >
+                  ⋮
+                </button>
                 {menuOpen && (
                   <div className="category-dropdown">
                     <button
+                      type="button" // ✅ Already has, keep it
                       className="dropdown-delete"
                       onClick={(e) => {
                         e.stopPropagation()
@@ -72,14 +77,13 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
             {noteCount} notes
           </span>
         </div>
-      </div>
+      </button>
 
       {showModal && (
-        <div
+        <dialog
           className="modal-overlay"
-          role="dialog"
-          aria-modal="true"
           aria-labelledby="delete-modal-title"
+          open
         >
           <div className="modal">
             <h3 id="delete-modal-title">Delete "{name}"?</h3>
@@ -95,6 +99,7 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
                   checked={deleteOption === 'move'}
                   onChange={() => setDeleteOption('move')}
                 />
+                {' '}
                 Move all notes to General
               </label>
               <label>
@@ -105,18 +110,21 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
                   checked={deleteOption === 'delete'}
                   onChange={() => setDeleteOption('delete')}
                 />
+                {' '}
                 Delete all notes
               </label>
             </div>
 
             <div className="modal-buttons">
               <button
+                type="button" // ✅ ADDED
                 className="modal-cancel"
                 onClick={() => setShowModal(false)}
               >
                 Cancel
               </button>
               <button
+                type="button" // ✅ ADDED
                 className="modal-confirm"
                 onClick={handleDeleteConfirm}
               >
@@ -124,7 +132,7 @@ function CategoryCard({ name, description, noteCount, isDefault, color, onDelete
               </button>
             </div>
           </div>
-        </div>
+        </dialog>
       )}
     </>
   )

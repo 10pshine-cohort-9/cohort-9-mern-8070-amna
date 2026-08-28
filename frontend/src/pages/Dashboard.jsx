@@ -49,10 +49,10 @@ function Dashboard() {
             <p>Capture your ideas and never lose track.</p>
           </div>
           <div className="dashboard-actions">
-            <button className="btn-primary" onClick={() => navigate('/notes/new')}>
+            <button type="button" className="btn-primary" onClick={() => navigate('/notes/new')}>
               + New Note
             </button>
-            <button className="btn-outline" onClick={() => setShowCategoryModal(true)}>
+            <button type="button" className="btn-outline" onClick={() => setShowCategoryModal(true)}>
               + New Category
             </button>
           </div>
@@ -63,6 +63,7 @@ function Dashboard() {
             <h2>📁 Categories {searchQuery && `(${filteredCategories.length})`}</h2>
             {searchQuery && (
               <button
+                type="button"
                 className="btn-clear-search"
                 onClick={() => setSearchQuery('')}
               >
@@ -100,6 +101,7 @@ function Dashboard() {
               {filteredNotes.map(note => {
                 return (
                   <button
+                    type="button"
                     key={note._id}
                     className="search-note-card"
                     onClick={() => navigate(`/notes/${note._id}`)}
