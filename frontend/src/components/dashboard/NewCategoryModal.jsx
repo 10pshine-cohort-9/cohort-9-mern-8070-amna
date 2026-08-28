@@ -4,6 +4,7 @@ import './NewCategoryModal.css'
 function NewCategoryModal({ onClose, onAdd, existingCategories }) {
   const [name, setName] = useState('')
   const [error, setError] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const dialogRef = useRef(null)
 
   useEffect(() => {
@@ -29,6 +30,7 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
       return
     }
 
+    setIsSubmitting(true)
     try {
       const success = await onAdd(name.trim())
       if (success) {
@@ -38,6 +40,8 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
       }
     } catch {
       setError('Failed to create category. Try again.')
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -64,7 +68,9 @@ function NewCategoryModal({ onClose, onAdd, existingCategories }) {
         {error && <p className="error-msg">{error}</p>}
         <div className="new-category-buttons">
           <button type="button" className="modal-cancel" onClick={onClose}>Cancel</button>
-          <button type="button" className="modal-confirm-teal" onClick={handleAdd}>Create</button>
+          <button type="button" className="modal-confirm-teal" onClick={handleAdd} disabled={isSubmitting}>
+            {isSubmitting ? 'Creating...' : 'Create'}
+          </button>
         </div>
       </div>
     </dialog>
