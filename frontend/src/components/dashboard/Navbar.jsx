@@ -56,8 +56,6 @@ function Navbar({ onSearch }) {
       </div>
 
       <div className="navbar-right">
-        <div className="navbar-avatar">A</div>
-        <span className="navbar-username">Amna</span>
         <button type="button" className="navbar-logout" onClick={handleLogout}>
           ⇥ Logout
         </button>
